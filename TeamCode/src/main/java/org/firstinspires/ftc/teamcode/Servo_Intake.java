@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -73,9 +74,13 @@ public class Servo_Intake extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
+    private CRServo intakeLeft = null;
+    private CRServo intakeRight = null;
 
     @Override
     public void runOpMode() {
+
+
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
@@ -83,6 +88,22 @@ public class Servo_Intake extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "leftBack");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFront");
         rightBackDrive = hardwareMap.get(DcMotor.class, "rightBack");
+
+        intakeLeft = hardwareMap.get(CRServo.class, "intakeLeft");
+        intakeRight = hardwareMap.get(CRServo.class, "intakeRight");
+
+        if (gamepad1.a) {
+            intakePower(0);
+        }
+
+        if (gamepad1.x) {
+
+            intakePower(-1);
+        }
+
+        if (gamepad1.y) {
+            intakePower(1);
+        }
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -105,6 +126,8 @@ public class Servo_Intake extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
+
+
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -158,10 +181,21 @@ public class Servo_Intake extends LinearOpMode {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
+            if (gamepad2.x) {
+
+            }
+
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.update();
         }
-    }}
+    }
+    public void intakePower(double speed){
+        intakeLeft.setPower(speed);
+        intakeRight.setPower(-speed);
+    }
+
+
+}
