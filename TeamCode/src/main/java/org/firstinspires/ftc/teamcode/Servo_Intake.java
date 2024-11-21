@@ -64,16 +64,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Omni Linear OpMode", group="Linear OpMode")
-@Disabled
+@TeleOp(name="Basic", group="Linear OpMode")
+
 public class Servo_Intake extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftFrontDrive = null;
-    private DcMotor leftBackDrive = null;
-    private DcMotor rightFrontDrive = null;
-    private DcMotor rightBackDrive = null;
+    //private DcMotor leftFrontDrive = null;
+   // private DcMotor leftBackDrive = null;
+    //private DcMotor rightFrontDrive = null;
+   // private DcMotor rightBackDrive = null;
     private CRServo intakeLeft = null;
     private CRServo intakeRight = null;
 
@@ -84,27 +84,15 @@ public class Servo_Intake extends LinearOpMode {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "leftFront");
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "leftBack");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFront");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "rightBack");
+        //leftFrontDrive  = hardwareMap.get(DcMotor.class, "leftFront");
+        //leftBackDrive  = hardwareMap.get(DcMotor.class, "leftBack");
+        //rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFront");
+        //rightBackDrive = hardwareMap.get(DcMotor.class, "rightBack");
 
         intakeLeft = hardwareMap.get(CRServo.class, "intakeLeft");
         intakeRight = hardwareMap.get(CRServo.class, "intakeRight");
 
-        if (gamepad1.a) {
-            intakePower(0);
-        }
-
-        if (gamepad1.x) {
-
-            intakePower(-1);
-        }
-
-        if (gamepad1.y) {
-            intakePower(1);
-        }
-
+        
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
         // ########################################################################################
@@ -131,27 +119,43 @@ public class Servo_Intake extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            double max;
+
+			if (gamepad1.a) {
+            	intakePower(0);
+        	}
+
+        	if (gamepad1.x) {
+
+            	intakePower(-1);
+        	}
+
+        	if (gamepad1.y) {
+         	   intakePower(1);
+        	}
+
+            //double max;
+
+
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
+            //double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            //double lateral =  gamepad1.left_stick_x;
+            //double yaw     =  gamepad1.right_stick_x;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = axial + lateral + yaw;
-            double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower   = axial - lateral + yaw;
-            double rightBackPower  = axial + lateral - yaw;
+            //double leftFrontPower  = axial + lateral + yaw;
+            //double rightFrontPower = axial - lateral - yaw;
+            //double leftBackPower   = axial - lateral + yaw;
+            //double rightBackPower  = axial + lateral - yaw;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
+            //max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+            //max = Math.max(max, Math.abs(leftBackPower));
+            //max = Math.max(max, Math.abs(rightBackPower));
 
-            if (max > 1.0) {
+            //if (max > 1.0) {
                 leftFrontPower  /= max;
                 rightFrontPower /= max;
                 leftBackPower   /= max;
@@ -176,14 +180,12 @@ public class Servo_Intake extends LinearOpMode {
             */
 
             // Send calculated power to wheels
-            leftFrontDrive.setPower(leftFrontPower);
-            rightFrontDrive.setPower(rightFrontPower);
-            leftBackDrive.setPower(leftBackPower);
-            rightBackDrive.setPower(rightBackPower);
+            //leftFrontDrive.setPower(leftFrontPower);
+            //rightFrontDrive.setPower(rightFrontPower);
+            //leftBackDrive.setPower(leftBackPower);
+            //rightBackDrive.setPower(rightBackPower);
 
-            if (gamepad2.x) {
-
-            }
+            
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
