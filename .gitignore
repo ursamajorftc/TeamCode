@@ -13,6 +13,8 @@
 *.class
 *.hprof
 
+# Secrets
+.env
 # Generated files
 bin/
 gen/
