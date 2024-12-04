@@ -1,4 +1,4 @@
-name: Java Code Check
+name: Java Code Check for explosion
 
 on:
   push:
