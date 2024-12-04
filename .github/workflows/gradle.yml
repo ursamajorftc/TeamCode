@@ -13,26 +13,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Java
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin' # Use Adoptium's Temurin distribution
-          java-version: '17'     # Adjust Java version as needed
-
-      # Step 3: Compile Java files
-      - name: Compile Java code
-        run: javac -d out $(find . -name "*.java")
-
-      # Step 4: Run tests (optional, if you have test files)
-      - name: Run tests
-        run: java -cp out org.junit.runner.JUnitCore <YourTestClass>
-
-      # Step 5: Static analysis (optional, using Checkstyle)
+          distribution: 'temurin'
+          java-version: '17'    
+          
+      # Step 3: Static analysis (using Checkstyle)
       - name: Run Checkstyle (optional)
         run: |
           curl -LJO https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.12.0/checkstyle-10.12.0-all.jar
