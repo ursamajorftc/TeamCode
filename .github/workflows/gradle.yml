@@ -24,23 +24,16 @@ jobs:
           distribution: 'temurin' # Use Adoptium's Temurin distribution
           java-version: '17'     # Adjust Java version as needed
 
-      # Step 3: Cache Maven dependencies
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+      # Step 3: Compile Java files
+      - name: Compile Java code
+        run: javac -d out $(find . -name "*.java")
 
-      # Step 4: Install dependencies and build project
-      - name: Build with Maven
-        run: mvn clean install --no-transfer-progress
-
-      # Step 5: Run tests
+      # Step 4: Run tests (optional, if you have test files)
       - name: Run tests
-        run: mvn test --no-transfer-progress
+        run: java -cp out org.junit.runner.JUnitCore <YourTestClass>
 
-      # Step 6: Analyze code quality (optional, using SpotBugs)
-      - name: Run SpotBugs (optional)
-        run: mvn spotbugs:check
+      # Step 5: Static analysis (optional, using Checkstyle)
+      - name: Run Checkstyle (optional)
+        run: |
+          curl -LJO https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.12.0/checkstyle-10.12.0-all.jar
+          java -jar checkstyle-10.12.0-all.jar -c /google_checks.xml $(find . -name "*.java")
