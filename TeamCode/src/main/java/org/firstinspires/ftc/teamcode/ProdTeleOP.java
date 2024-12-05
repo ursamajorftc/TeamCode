@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -45,6 +44,8 @@ public class ProdTeleOP extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            // Intentional error out for a warning
+            telemetry.addData("WARNING:","CONFIG REQUIRED BEFORE YOU RUN THIS OR DAMAGE MAY OCCUR. REMOVE THIS LINE OF CODE ONCE CONFIGURED ");
             if (gamepad1.right_trigger > 0.5) {
                 moveSlideToPosition(FULL_EXTENSION);
             } else if (gamepad1.right_bumper) {
