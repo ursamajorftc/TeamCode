@@ -109,6 +109,12 @@ public class TeleOpUntst extends LinearOpMode {
         intakeCRSLeft.setPower(power);
         intakeCRSRight.setPower(-power);
     }
+    private void positionIntake (double intakePosition) {
+        intakeServoLeft.setPosition(intakePosition);
+        intakeServoRight.setPosition(-intakePosition);
+
+
+    }
 
     // Telemetry updates
     private void updateTelemetry(MecanumDrive drive, FtcDashboard dashboard, int targetPosition) {
