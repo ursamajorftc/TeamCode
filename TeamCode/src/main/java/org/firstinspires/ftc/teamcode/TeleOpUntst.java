@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp", group = "Linear OpMode")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOpButBetter", group = "Linear OpMode")
 @Config
 public class TeleOpUntst extends LinearOpMode {
 
@@ -25,35 +25,123 @@ public class TeleOpUntst extends LinearOpMode {
     private CRServo intakeCRSRight;
 
 
-    public static double P = 10.0;
-    public static double I = 3.0;
-    public static double D = 0.0;
-    public static double F = 1.0;
+    final int FULL_EXTENSION = 965;
+    final int HALF_EXTENSION = FULL_EXTENSION / 2;
+    final int QUARTER_EXTENSION = FULL_EXTENSION / 4;
 
-    private PIDFController intakePIDF;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
-
+        // Hardware and PIDF initialization
         initHardware();
 
 
-        intakePIDF = new PIDFController(P, I, D, F);
-
-
+        // Initialize telemetry
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+        waitForStart();
 
-        if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class)) {
-            runWithMecanumDrive(dashboard);
-        } else if (TuningOpModes.DRIVE_CLASS.equals(TankDrive.class)) {
-            runWithTankDrive(dashboard);
-        } else {
-            throw new RuntimeException("Unknown drive class!");
+        int targetPosition = 0; // Track the desired position
+
+        while (opModeIsActive()) {
+            // Drive controls
+            drive.setDrivePowers(new PoseVelocity2d(
+                    new Vector2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x),
+                    -gamepad1.right_stick_x
+            ));
+
+            // IntakeDrive controls
+            if (gamepad1.right_trigger > 0.5) {
+                targetPosition = 965; // Full extension
+            } else if (gamepad1.right_bumper) {
+                targetPosition = 482; // Half extension
+            } else if (gamepad1.y) {
+                targetPosition = 241; // Quarter extension
+            }
+            if (gamepad1.right_trigger > 0.5) {
+                moveToPosition(FULL_EXTENSION);
+            }
+            // Half extension
+            else if (gamepad1.right_bumper) {
+                moveToPosition(HALF_EXTENSION);
+            }
+            // Quarter extension
+            else if (gamepad1.y) {
+                moveToPosition(QUARTER_EXTENSION);
+            }
+            // Retract completely
+            else if (gamepad1.x) {
+                moveToPosition(0);
+            }
+
+            if (gamepad1.dpad_up) {
+                intakeServoLeft.setPosition(1.0); // Adjust as per your mechanism
+                intakeServoRight.setPosition(0.0); // Adjust as per your mechanism
+            }
+
+            // Reset intake position
+            if (gamepad1.dpad_down) {
+                intakeServoLeft.setPosition(0.0); // Adjust as per your mechanism
+                intakeServoRight.setPosition(1.0); // Adjust as per your mechanism
+            }
+            // Intake Control
+            if (gamepad1.a) {
+                spinIntake(-1.0); // Move intake down
+            } else if (gamepad1.b) {
+                spinIntake(1.0); // Move intake up
+            } else {
+                spinIntake(0.0); // Stop intake
+            }
+
+            // Update telemetry
+            updateTelemetry(drive, dashboard, targetPosition);
         }
     }
 
+    private void moveToPosition(int targetPosition) {
+        intakeDrive.setTargetPosition(targetPosition);
+        intakeDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        intakeDrive.setPower(0.8); // Adjust power to prevent overheating
+        while (opModeIsActive() && intakeDrive.isBusy()) {
+            // Wait until the motor reaches the target position
+        }
+        intakeDrive.setPower(0.0); // Stop the motor
+        intakeDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    private void spinIntake(double power) {
+        intakeCRSLeft.setPower(power);
+        intakeCRSRight.setPower(-power);
+    }
+
+    // Telemetry updates
+    private void updateTelemetry(MecanumDrive drive, FtcDashboard dashboard, int targetPosition) {
+        drive.updatePoseEstimate();
+        double intakePosition = intakeDrive.getCurrentPosition();
+
+        telemetry.addData("x", drive.pose.position.x);
+        telemetry.addData("y", drive.pose.position.y);
+        telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
+        telemetry.addData("Intake Position", intakePosition);
+        telemetry.addData("Target Position", targetPosition);
+        telemetry.addData("Motor Power", intakeDrive.getPower());
+        telemetry.addData("Servo Left Position", intakeServoLeft.getPosition());
+        telemetry.addData("Servo Right Position", intakeServoRight.getPosition());
+        telemetry.update();
+
+        TelemetryPacket packet = new TelemetryPacket();
+        packet.put("x", drive.pose.position.x);
+        packet.put("y", drive.pose.position.y);
+        packet.put("heading", Math.toDegrees(drive.pose.heading.toDouble()));
+        packet.put("Intake Position", intakePosition);
+        packet.put("Target Position", targetPosition);
+        packet.put("Motor Power", intakeDrive.getPower());
+        dashboard.sendTelemetryPacket(packet);
+    }
+
+    // Hardware initialization
     private void initHardware() {
         intakeDrive = hardwareMap.get(DcMotor.class, "intakeDrive");
         intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -64,107 +152,4 @@ public class TeleOpUntst extends LinearOpMode {
         intakeServoRight = hardwareMap.get(Servo.class, "intakeServoRight");
         intakeCRSLeft = hardwareMap.get(CRServo.class, "intakeCRSLeft");
         intakeCRSRight = hardwareMap.get(CRServo.class, "intakeCRSRight");
-    }
-
-    private void runWithMecanumDrive(FtcDashboard dashboard) throws InterruptedException {
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        waitForStart();
-
-        while (opModeIsActive()) {
-            intakePIDF.setPIDF(P, I, D, F);
-
-            drive.setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x
-                    ),
-                    -gamepad1.right_stick_x
-            ));
-
-            if (gamepad1.x) {
-                controlIntakeDrive(965); // Move intake to position 965
-            } else if (gamepad1.y) {
-                controlIntakeDrive(0); // Reset intake to position 0
-            }
-
-            // Servo control
-            if (gamepad1.a) {
-                intakeServoLeft.setPosition(0);
-            }
-
-            updateTelemetry(drive, dashboard);
-        }
-    }
-
-    private void runWithTankDrive(FtcDashboard dashboard) throws InterruptedException {
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-        waitForStart();
-
-        while (opModeIsActive()) {
-            // Drive logic
-            drive.setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(
-                            -gamepad1.left_stick_y,
-                            0.0
-                    ),
-                    -gamepad1.right_stick_x
-            ));
-
-
-            if (gamepad1.x) {
-                controlIntakeDrive(965);
-            } else if (gamepad1.y) {
-                controlIntakeDrive(0);
-            }
-
-            // Update telemetry and dashboard
-            updateTelemetry(drive, dashboard);
-        }
-    }
-
-    private void controlIntakeDrive(int targetPosition) {
-        int currentPosition = intakeDrive.getCurrentPosition();
-        intakePIDF.setSetPoint(targetPosition);
-        double pidfOutput = intakePIDF.calculate(currentPosition);
-        intakeDrive.setPower(pidfOutput);
-
-        TelemetryPacket packet = new TelemetryPacket();
-        packet.put("Intake Current Position", currentPosition);
-        packet.put("Intake Target Position", targetPosition);
-        packet.put("PIDF Output", pidfOutput);
-        FtcDashboard.getInstance().sendTelemetryPacket(packet);
-    }
-
-    private void updateTelemetry(MecanumDrive drive, FtcDashboard dashboard) {
-        drive.updatePoseEstimate();
-        double leftServoPosition = intakeServoLeft.getPosition();
-        double rightServoPosition = intakeServoRight.getPosition();
-
-        telemetry.addData("x", drive.pose.position.x);
-        telemetry.addData("y", drive.pose.position.y);
-        telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
-        telemetry.addData("intakePosition", intakeDrive.getCurrentPosition());
-        telemetry.addData("P", P);
-        telemetry.addData("I", I);
-        telemetry.addData("D", D);
-        telemetry.addData("F", F);
-        telemetry.addData("ServoLeft Position", leftServoPosition);
-        telemetry.addData("ServoRight Position", rightServoPosition);
-        telemetry.addData("CRSLeft Power", intakeCRSLeft.getPower());
-        telemetry.addData("CRSRight Power", intakeCRSRight.getPower());
-        telemetry.update();
-
-        TelemetryPacket packet = new TelemetryPacket();
-        packet.fieldOverlay().setStroke("#3F51B5");
-        packet.put("x", drive.pose.position.x);
-        packet.put("y", drive.pose.position.y);
-        packet.put("heading", Math.toDegrees(drive.pose.heading.toDouble()));
-        packet.put("intakePosition", intakeDrive.getCurrentPosition());
-        packet.put("P", P);
-        packet.put("I", I);
-        packet.put("D", D);
-        packet.put("F", F);
-        Drawing.drawRobot(packet.fieldOverlay(), drive.pose);
-        dashboard.sendTelemetryPacket(packet);
-    }
-}
+    }}
