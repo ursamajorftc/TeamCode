@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.arcrobotics.ftclib.controller.PIDFController;
-import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
+//import com.arcrobotics.ftclib.controller.PIDFController;
+//import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOpButBetter", group = "Linear OpMode")
 @Config
