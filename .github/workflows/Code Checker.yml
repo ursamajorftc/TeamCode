@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  Checking for stupidity:
+  Checking-for-stupidity:
     runs-on: ubuntu-latest
 
     steps:
