@@ -83,7 +83,8 @@ public class ProdTeleOP extends LinearOpMode {
         moveIntakeUp();
         intakeDrive.setTargetPosition(0);
         intakeDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        intakeDrive.setPower(1.0);
+        intakeDrive.setPower(0.0);
+        intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
     private void moveIntakeDown() {
         intakeServoLeft.setPosition(INTAKE_DOWN_LPOSITION);
