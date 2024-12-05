@@ -27,7 +27,7 @@ public class TeleOpUntst extends LinearOpMode {
 
     final int FULL_EXTENSION = 965;
     final int HALF_EXTENSION = FULL_EXTENSION / 2;
-    final int QUARTER_EXTENSION = FULL_EXTENSION / 4;
+    final int QUARTER_EXTENSION = FULL_EXTENSION / 3;
 
 
 
@@ -55,13 +55,6 @@ public class TeleOpUntst extends LinearOpMode {
 
             // IntakeDrive controls
             if (gamepad1.right_trigger > 0.5) {
-                targetPosition = 965; // Full extension
-            } else if (gamepad1.right_bumper) {
-                targetPosition = 482; // Half extension
-            } else if (gamepad1.y) {
-                targetPosition = 241; // Quarter extension
-            }
-            if (gamepad1.right_trigger > 0.5) {
                 moveToPosition(FULL_EXTENSION);
             }
             // Half extension
@@ -78,14 +71,14 @@ public class TeleOpUntst extends LinearOpMode {
             }
 
             if (gamepad1.dpad_up) {
-                intakeServoLeft.setPosition(1.0); // Adjust as per your mechanism
-                intakeServoRight.setPosition(0.0); // Adjust as per your mechanism
+                intakeServoLeft.setPosition(1.0);
+                intakeServoRight.setPosition(0.0);
             }
 
             // Reset intake position
             if (gamepad1.dpad_down) {
-                intakeServoLeft.setPosition(0.0); // Adjust as per your mechanism
-                intakeServoRight.setPosition(1.0); // Adjust as per your mechanism
+                intakeServoLeft.setPosition(0.0);
+                intakeServoRight.setPosition(1.0);
             }
             // Intake Control
             if (gamepad1.a) {
