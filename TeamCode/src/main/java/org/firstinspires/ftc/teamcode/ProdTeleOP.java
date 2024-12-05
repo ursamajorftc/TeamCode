@@ -16,7 +16,7 @@ public class ProdTeleOP extends LinearOpMode {
     private Servo intakeServoRight;
     private CRServo intakeCRSLeft;
     private CRServo intakeCRSRight;
-    // these are variables "exposed" to FTCDashboard. USE FTC DASH TO CHANGE THESE, UNLESS YOU HAVE FIGURED OUT THESE VALUES - aaron 12:48 AM 12/5/24
+    // CONFIG REQUIRED BEFORE YOU RUN THIS OR DAMAGE MAY OCCUR. These are variables "exposed" to FTCDashboard. USE FTC DASH TO CHANGE THESE, UNLESS YOU HAVE FIGURED OUT THESE VALUES - aaron 12:48 AM 12/5/24
     private static final int FULL_EXTENSION = 965;
     private static final int HALF_EXTENSION = 482;
     private static final int QUARTER_EXTENSION = 241;
