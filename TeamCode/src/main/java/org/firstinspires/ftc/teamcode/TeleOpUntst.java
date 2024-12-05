@@ -27,7 +27,7 @@ public class TeleOpUntst extends LinearOpMode {
 
     final int FULL_EXTENSION = 965;
     final int HALF_EXTENSION = FULL_EXTENSION / 2;
-    final int QUARTER_EXTENSION = FULL_EXTENSION / 4;
+    final int QUARTER_EXTENSION = FULL_EXTENSION / 3;
 
 
 
@@ -54,13 +54,7 @@ public class TeleOpUntst extends LinearOpMode {
             ));
 
             // IntakeDrive controls
-            if (gamepad1.right_trigger > 0.5) {
-                targetPosition = 965; // Full extension
-            } else if (gamepad1.right_bumper) {
-                targetPosition = 482; // Half extension
-            } else if (gamepad1.y) {
-                targetPosition = 241; // Quarter extension
-            }
+
             if (gamepad1.right_trigger > 0.5) {
                 moveToPosition(FULL_EXTENSION);
             }
