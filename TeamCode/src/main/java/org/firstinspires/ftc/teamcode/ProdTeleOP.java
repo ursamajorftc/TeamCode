@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -15,15 +18,14 @@ public class ProdTeleOP extends LinearOpMode {
     private Servo intakeServoRight;
     private CRServo intakeCRSLeft;
     private CRServo intakeCRSRight;
-    // CONFIG REQUIRED BEFORE YOU RUN THIS OR DAMAGE MAY OCCUR. These are variables "exposed" to FTCDashboard. USE FTC DASH TO CHANGE THESE, UNLESS YOU HAVE FIGURED OUT THESE VALUES - aaron 12:48 AM 12/5/24
-    private static final int FULL_EXTENSION = 965;
-    private static final int HALF_EXTENSION = 482;
-    private static final int QUARTER_EXTENSION = 241;
-    private static final double INTAKE_DOWN_LPOSITION = 0.0;
-    private static final double INTAKE_DOWN_RPOSITION = 0.0;
-    private static final double INTAKE_UP_LPOSITION = 0.0;
-    private static final double INTAKE_UP_RPOSITION = 0.0;
-    private static final double INTAKE_SPIN_POWER = 1.0;
+    public static int FULL_EXTENSION = 965;
+    public static int HALF_EXTENSION = 482;
+    public static int QUARTER_EXTENSION = 241;
+    public static double INTAKE_DOWN_LPOSITION = 0.41;
+    public static double INTAKE_DOWN_RPOSITION = -0.41;
+    public static double INTAKE_UP_LPOSITION = 1.0;
+    public static double INTAKE_UP_RPOSITION = 0.0;
+    public static double INTAKE_SPIN_POWER = 1.0;
     // end of exposed variables
     @Override
     public void runOpMode() throws InterruptedException {
@@ -44,22 +46,31 @@ public class ProdTeleOP extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            // Intentional error out for a warning
-            telemetry.addData("WARNING:","CONFIG REQUIRED BEFORE YOU RUN THIS OR DAMAGE MAY OCCUR. REMOVE THIS LINE OF CODE ONCE CONFIGURED ");
+            MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+            drive.setDrivePowers(new PoseVelocity2d(
+                    new Vector2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x),
+                    -gamepad1.right_stick_x
+            ));
             if (gamepad1.right_trigger > 0.5) {
                 moveSlideToPosition(FULL_EXTENSION);
+                moveIntakeDown();
+                spinIntake();
             } else if (gamepad1.right_bumper) {
                 moveSlideToPosition(HALF_EXTENSION);
+                moveIntakeDown();
+                spinIntake();
             } else if (gamepad1.y) {
                 moveSlideToPosition(QUARTER_EXTENSION);
+                moveIntakeDown();
+                spinIntake();
             } else if (gamepad1.x) {
                 retractSlide();
+            } else if (gamepad1.dpad_up) {
+
+            } else if (gamepad1.dpad_down) {
+
             }
 
-
-            // Automatically move the intake down and spin
-            moveIntakeDown();
-            spinIntake();
 
             telemetry.addData("Slide Position", intakeDrive.getCurrentPosition());
             telemetry.update();
@@ -80,25 +91,28 @@ public class ProdTeleOP extends LinearOpMode {
     }
 
     private void retractSlide() {
-        stopIntake();
-        moveIntakeUp();
-        intakeDrive.setTargetPosition(0);
+        intakeServoLeft.setPosition(INTAKE_UP_LPOSITION);
+        intakeServoRight.setPosition(INTAKE_UP_RPOSITION);
+        intakeCRSLeft.setPower(0);
+        intakeCRSRight.setPower(0);
         intakeDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        moveSlideToPosition(0);
         intakeDrive.setPower(0.0);
         intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
     }
     private void moveIntakeDown() {
-        intakeServoLeft.setPosition(INTAKE_DOWN_LPOSITION);
-        intakeServoRight.setPosition(INTAKE_DOWN_RPOSITION);
+        // intakeServoLeft.setPosition(INTAKE_DOWN_LPOSITION);
+       intakeServoRight.setPosition(INTAKE_DOWN_RPOSITION);
     }
     private void moveIntakeUp() {
-        intakeServoLeft.setPosition(INTAKE_UP_LPOSITION);
+        // intakeServoLeft.setPosition(INTAKE_UP_LPOSITION);
         intakeServoRight.setPosition(INTAKE_UP_RPOSITION);
     }
 
     private void spinIntake() {
-        intakeCRSLeft.setPower(INTAKE_SPIN_POWER);
-        intakeCRSRight.setPower(-INTAKE_SPIN_POWER); // reverse this so we don't explode servos lol
+        intakeCRSLeft.setPower(-INTAKE_SPIN_POWER);
+        intakeCRSRight.setPower(INTAKE_SPIN_POWER); // reverse this so we don't explode servos lol
     }
     private void stopIntake() {
         intakeCRSLeft.setPower(0);
