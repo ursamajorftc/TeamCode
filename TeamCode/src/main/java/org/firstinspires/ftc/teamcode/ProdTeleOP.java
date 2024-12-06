@@ -18,6 +18,7 @@ public class ProdTeleOP extends LinearOpMode {
     private Servo intakeServoRight;
     private CRServo intakeCRSLeft;
     private CRServo intakeCRSRight;
+    private Servo clawServo;
     public static int FULL_EXTENSION = 965;
     public static int HALF_EXTENSION = 482;
     public static int QUARTER_EXTENSION = 241;
@@ -26,6 +27,9 @@ public class ProdTeleOP extends LinearOpMode {
     public static double INTAKE_UP_LPOSITION = 0.18;
     public static double INTAKE_UP_RPOSITION = 0.8;
     public static double INTAKE_SPIN_POWER = 1.0;
+    public static double CLAW_CLOSE = 0.0;
+    public static double CLAW_OPEN = 0.4;
+
     // end of exposed variables
     @Override
     public void runOpMode() throws InterruptedException {
@@ -35,6 +39,7 @@ public class ProdTeleOP extends LinearOpMode {
         intakeServoRight = hardwareMap.get(Servo.class, "intakeServoRight");
         intakeCRSLeft = hardwareMap.get(CRServo.class, "intakeCRSLeft");
         intakeCRSRight = hardwareMap.get(CRServo.class, "intakeCRSRight");
+        clawServo = hardwareMap.get(Servo.class, "clawServo");
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -67,6 +72,12 @@ public class ProdTeleOP extends LinearOpMode {
             while (gamepad1.y) {
                 Backspin();
             }
+            if (gamepad1.a) {
+                clawServo.setPosition(CLAW_OPEN);
+            }
+            if (gamepad1.b) {
+                clawServo.setPosition(CLAW_CLOSE);
+            }
 
 
             telemetry.addData("Slide Position", intakeDrive.getCurrentPosition());
@@ -75,8 +86,8 @@ public class ProdTeleOP extends LinearOpMode {
     }
 
     private void moveSlideToPosition(int position) {
-        intakeDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         intakeDrive.setTargetPosition(position);
+        intakeDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         intakeDrive.setPower(1.0);
         while (intakeDrive.isBusy() && opModeIsActive()) {
             telemetry.addData("I want to move to:", position);
@@ -93,7 +104,6 @@ public class ProdTeleOP extends LinearOpMode {
         intakeCRSLeft.setPower(-0.025);
         intakeCRSRight.setPower(0.025);
         intakeDrive.setPower(1);
-        intakeDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         moveSlideToPosition(0);
         intakeDrive.setPower(0.0);
         intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
