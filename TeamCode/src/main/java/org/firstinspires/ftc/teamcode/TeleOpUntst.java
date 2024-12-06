@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.arcrobotics.ftclib.controller.PIDFController;
-import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
+//import com.arcrobotics.ftclib.controller.PIDFController;
+//import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOpButBetter", group = "Linear OpMode")
 @Config
@@ -72,14 +72,14 @@ public class TeleOpUntst extends LinearOpMode {
             }
 
             if (gamepad1.dpad_up) {
-                intakeServoLeft.setPosition(1.0); // Adjust as per your mechanism
-                intakeServoRight.setPosition(0.0); // Adjust as per your mechanism
+                intakeServoLeft.setPosition(1.0);
+                intakeServoRight.setPosition(0.0);
             }
 
             // Reset intake position
             if (gamepad1.dpad_down) {
-                intakeServoLeft.setPosition(0.0); // Adjust as per your mechanism
-                intakeServoRight.setPosition(1.0); // Adjust as per your mechanism
+                intakeServoLeft.setPosition(0.0);
+                intakeServoRight.setPosition(1.0);
             }
             // Intake Control
             if (gamepad1.a) {
