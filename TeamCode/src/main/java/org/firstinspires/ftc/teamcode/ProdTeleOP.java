@@ -21,10 +21,10 @@ public class ProdTeleOP extends LinearOpMode {
     public static int FULL_EXTENSION = 965;
     public static int HALF_EXTENSION = 482;
     public static int QUARTER_EXTENSION = 241;
-    public static double INTAKE_DOWN_LPOSITION = 0.41;
-    public static double INTAKE_DOWN_RPOSITION = -0.41;
-    public static double INTAKE_UP_LPOSITION = 1.0;
-    public static double INTAKE_UP_RPOSITION = 0.0;
+    public static double INTAKE_DOWN_LPOSITION = 0.58;
+    public static double INTAKE_DOWN_RPOSITION = 0.4 ;
+    public static double INTAKE_UP_LPOSITION = 0.18;
+    public static double INTAKE_UP_RPOSITION = 0.8;
     public static double INTAKE_SPIN_POWER = 1.0;
     // end of exposed variables
     @Override
@@ -55,20 +55,14 @@ public class ProdTeleOP extends LinearOpMode {
                 moveSlideToPosition(FULL_EXTENSION);
                 moveIntakeDown();
                 spinIntake();
-            } else if (gamepad1.right_bumper) {
+            }
+            if (gamepad1.right_bumper) {
                 moveSlideToPosition(HALF_EXTENSION);
                 moveIntakeDown();
                 spinIntake();
-            } else if (gamepad1.y) {
-                moveSlideToPosition(QUARTER_EXTENSION);
-                moveIntakeDown();
-                spinIntake();
-            } else if (gamepad1.x) {
+            }
+            if (gamepad1.x) {
                 retractSlide();
-            } else if (gamepad1.dpad_up) {
-
-            } else if (gamepad1.dpad_down) {
-
             }
 
 
@@ -78,10 +72,9 @@ public class ProdTeleOP extends LinearOpMode {
     }
 
     private void moveSlideToPosition(int position) {
-        intakeDrive.setTargetPosition(position);
         intakeDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        intakeDrive.setTargetPosition(position);
         intakeDrive.setPower(1.0);
-
         while (intakeDrive.isBusy() && opModeIsActive()) {
             telemetry.addData("I want to move to:", position);
             telemetry.addData("I am at: ", intakeDrive.getCurrentPosition());
@@ -91,10 +84,12 @@ public class ProdTeleOP extends LinearOpMode {
     }
 
     private void retractSlide() {
+
         intakeServoLeft.setPosition(INTAKE_UP_LPOSITION);
         intakeServoRight.setPosition(INTAKE_UP_RPOSITION);
         intakeCRSLeft.setPower(0);
         intakeCRSRight.setPower(0);
+        intakeDrive.setPower(1);
         intakeDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         moveSlideToPosition(0);
         intakeDrive.setPower(0.0);
@@ -102,13 +97,13 @@ public class ProdTeleOP extends LinearOpMode {
 
     }
     private void moveIntakeDown() {
-        // intakeServoLeft.setPosition(INTAKE_DOWN_LPOSITION);
-       intakeServoRight.setPosition(INTAKE_DOWN_RPOSITION);
+       intakeServoLeft.setPosition(INTAKE_DOWN_LPOSITION);
+        intakeServoRight.setPosition(INTAKE_DOWN_RPOSITION);
     }
-    private void moveIntakeUp() {
-        // intakeServoLeft.setPosition(INTAKE_UP_LPOSITION);
-        intakeServoRight.setPosition(INTAKE_UP_RPOSITION);
-    }
+//    private void moveIntakeUp() {
+//       intakeServoLeft.setPosition(INTAKE_UP_LPOSITION);
+//        intakeServoRight.setPosition(INTAKE_UP_RPOSITION);
+//    }
 
     private void spinIntake() {
         intakeCRSLeft.setPower(-INTAKE_SPIN_POWER);
