@@ -53,16 +53,19 @@ public class ProdTeleOP extends LinearOpMode {
             ));
             if (gamepad1.right_trigger > 0.5) {
                 moveSlideToPosition(FULL_EXTENSION);
-                moveIntakeDown();
                 spinIntake();
+                moveIntakeDown();
             }
             if (gamepad1.right_bumper) {
                 moveSlideToPosition(HALF_EXTENSION);
-                moveIntakeDown();
                 spinIntake();
+                moveIntakeDown();
             }
-            if (gamepad1.x) {
+            if (gamepad1.left_trigger > 0.5) {
                 retractSlide();
+            }
+            while (gamepad1.y) {
+                Backspin();
             }
 
 
@@ -87,8 +90,8 @@ public class ProdTeleOP extends LinearOpMode {
 
         intakeServoLeft.setPosition(INTAKE_UP_LPOSITION);
         intakeServoRight.setPosition(INTAKE_UP_RPOSITION);
-        intakeCRSLeft.setPower(0);
-        intakeCRSRight.setPower(0);
+        intakeCRSLeft.setPower(-0.025);
+        intakeCRSRight.setPower(0.025);
         intakeDrive.setPower(1);
         intakeDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         moveSlideToPosition(0);
@@ -108,6 +111,10 @@ public class ProdTeleOP extends LinearOpMode {
     private void spinIntake() {
         intakeCRSLeft.setPower(-INTAKE_SPIN_POWER);
         intakeCRSRight.setPower(INTAKE_SPIN_POWER); // reverse this so we don't explode servos lol
+    }
+    private void Backspin() {
+        intakeCRSLeft.setPower(INTAKE_SPIN_POWER);
+        intakeCRSRight.setPower(-INTAKE_SPIN_POWER); // reverse this so we don't explode servos lol
     }
     private void stopIntake() {
         intakeCRSLeft.setPower(0);
