@@ -89,10 +89,10 @@ public class ProdTeleOP extends LinearOpMode {
             while (gamepad1.y) {
                 Backspin();
             }
-            if (gamepad1.a) {
+            if (gamepad1.b) {
                 clawServo.setPosition(CLAW_OPEN);
             }
-            if (gamepad1.b) {
+            if (gamepad1.a) {
                 clawServo.setPosition(CLAW_CLOSE);
             }
             double distanceInMM = distanceSensor.getDistance(DistanceUnit.MM);
