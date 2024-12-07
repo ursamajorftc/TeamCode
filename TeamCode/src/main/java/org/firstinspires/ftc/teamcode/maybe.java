@@ -8,34 +8,29 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-
 import java.util.concurrent.locks.Lock;
 
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "guh", group = "Linear OpMode")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "EXPDASHTeleOp", group = "Linear OpMode")
 @Config
-public class ProdTeleOP extends LinearOpMode {
+public class maybe extends LinearOpMode {
 
     private DcMotor intakeDrive;
     private DcMotor outtakeDrive1;
     private DcMotor outtakeDrive2;
-
     private Servo intakeServoLeft;
     private Servo intakeServoRight;
     private CRServo intakeCRSLeft;
     private CRServo intakeCRSRight;
     private Servo armServo;
     private Servo fingerServo;
-
     private Servo wristServo;
     private Servo lockServo;
-
 
     @Override
     public void resetRuntime() {
         super.resetRuntime();
     }
-
 
     public static double ARMGRAB = -0.3; // arm at 90 degrees paralell with the intake
     public static double WRIST90 = 0.5; // pos for graby graby block
@@ -50,7 +45,6 @@ public class ProdTeleOP extends LinearOpMode {
     public static double VERTDOWNGO1 = 0;
     // these should be default i think
     public static double VERTDOWNGO2 = 0;
-
     public static int FULL_EXTENSION = 965;
     public static int HALF_EXTENSION = 482;
     public static int QUARTER_EXTENSION = 241;
@@ -60,7 +54,6 @@ public class ProdTeleOP extends LinearOpMode {
     public static double INTAKE_UP_RPOSITION = 0.8;
     public static double INTAKE_SPIN_POWER = 1.0;
     public static double UNLOCK = 0;
-
     public static double LOCK = -0.5;
 
 
@@ -129,13 +122,13 @@ public class ProdTeleOP extends LinearOpMode {
             while (gamepad1.y && opModeIsActive()) {
                 Backspin();
             }
-//            if (gamepad1.b) {
-//                moveVertSlidesToPos(3500, 1);
-//
-//
-//            }
+            if (gamepad1.b) {
+                moveVertSlidesToPos(3500, 1);
 
-          //  double distanceInMM = distanceSensor.getDistance(DistanceUnit.MM);
+
+            }
+
+            //  double distanceInMM = distanceSensor.getDistance(DistanceUnit.MM);
 
             // Print the distance value (for debugging)
 //            telemetry.addData("Distance", distanceInMM);
@@ -208,8 +201,8 @@ public class ProdTeleOP extends LinearOpMode {
 
 
 
-}
-private void retractSlide() {
+    }
+    private void retractSlide() {
 
         intakeServoLeft.setPosition(INTAKE_UP_LPOSITION);
         intakeServoRight.setPosition(INTAKE_UP_RPOSITION);
@@ -222,7 +215,7 @@ private void retractSlide() {
 
     }
     private void moveIntakeDown() {
-       intakeServoLeft.setPosition(INTAKE_DOWN_LPOSITION);
+        intakeServoLeft.setPosition(INTAKE_DOWN_LPOSITION);
         intakeServoRight.setPosition(INTAKE_DOWN_RPOSITION);
     }
 //    private void moveIntakeUp() {
