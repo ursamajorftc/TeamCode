@@ -93,7 +93,12 @@ public class ProdTeleOP extends LinearOpMode {
                 clawServo.setPosition(CLAW_OPEN);
             }
             if (gamepad1.a) {
-                clawServo.setPosition(CLAW_CLOSE);
+                setWristDown();
+                setArmDown();
+                sleep(1000);
+                closeClaw();
+                setArmBack();
+                setWristBack();
             }
             double distanceInMM = distanceSensor.getDistance(DistanceUnit.MM);
 
