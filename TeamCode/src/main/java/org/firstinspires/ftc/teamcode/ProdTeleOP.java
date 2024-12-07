@@ -8,6 +8,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "EXPDASHTeleOp", group = "Linear OpMode")
 @Config
@@ -19,6 +26,9 @@ public class ProdTeleOP extends LinearOpMode {
     private CRServo intakeCRSLeft;
     private CRServo intakeCRSRight;
     private Servo clawServo;
+    private Servo wristServo;
+    private Servo armServo;
+    private static final double DISTANCE_THRESHOLD_MM = 12.0;  // Threshold in mm
     public static int FULL_EXTENSION = 965;
     public static int HALF_EXTENSION = 482;
     public static int QUARTER_EXTENSION = 241;
@@ -29,6 +39,10 @@ public class ProdTeleOP extends LinearOpMode {
     public static double INTAKE_SPIN_POWER = 1.0;
     public static double CLAW_CLOSE = 0.0;
     public static double CLAW_OPEN = 0.4;
+    public static double WRIST_DOWN = 0.0;
+    public static double WRIST_BACK = 1.0;
+    public static double ARM_DOWN = 0.0;
+    public static double ARM_BACK = 1.0;
 
     // end of exposed variables
     @Override
@@ -40,6 +54,9 @@ public class ProdTeleOP extends LinearOpMode {
         intakeCRSLeft = hardwareMap.get(CRServo.class, "intakeCRSLeft");
         intakeCRSRight = hardwareMap.get(CRServo.class, "intakeCRSRight");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
+        // Distance sensor object
+        DistanceSensor distanceSensor = hardwareMap.get(DistanceSensor.class, "sensor_distance");
+
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -77,6 +94,21 @@ public class ProdTeleOP extends LinearOpMode {
             }
             if (gamepad1.b) {
                 clawServo.setPosition(CLAW_CLOSE);
+            }
+            double distanceInMM = distanceSensor.getDistance(DistanceUnit.MM);
+
+            // Print the distance value (for debugging)
+            telemetry.addData("Distance", distanceInMM);
+            telemetry.update();
+
+            // Check if the distance is less than or equal to 12mm
+            if (distanceInMM <= DISTANCE_THRESHOLD_MM) {
+                setWristDown();
+                setArmDown();
+                sleep(1000);
+                closeClaw();
+                setArmBack();
+                setWristBack();
             }
 
 
@@ -129,5 +161,23 @@ public class ProdTeleOP extends LinearOpMode {
     private void stopIntake() {
         intakeCRSLeft.setPower(0);
         intakeCRSRight.setPower(0);
+    }
+    private void closeClaw() {
+        clawServo.setPosition(CLAW_CLOSE);
+    }
+    private void openClaw(){
+        clawServo.setPosition(CLAW_OPEN);
+    }
+    private void setWristDown() {
+        wristServo.setPosition(WRIST_DOWN);
+    }
+    private void setWristBack(){
+        wristServo.setPosition(WRIST_BACK);
+    }
+    private void setArmDown(){
+        armServo.setPosition(ARM_DOWN);
+    }
+    private void setArmBack(){
+        armServo.setPosition(ARM_BACK);
     }
 }
