@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -15,6 +16,7 @@ import java.util.concurrent.locks.Lock;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "guh", group = "Linear OpMode")
 @Config
+@Disabled
 public class ProdTeleOP extends LinearOpMode {
 
     private DcMotor intakeDrive;
@@ -34,6 +36,7 @@ public class ProdTeleOP extends LinearOpMode {
     private AnalogInput AxonServo2;
 
     @Override
+
     public void resetRuntime() {
         super.resetRuntime();
     }

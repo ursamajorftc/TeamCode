@@ -3,21 +3,22 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TwoGamepads", group = "Linear OpMode")
-@Config
+//@Config
 public class TwoGamepads extends LinearOpMode {
 
     // Hardware variables
-    private DcMotor intakeDrive, outtakeDrive1, outtakeDrive2;
-    private Servo intakeServoLeft, intakeServoRight, lockServo;
-    private CRServo intakeCRSLeft, intakeCRSRight;
-    AnalogInput axonServo = hardwareMap.get(AnalogInput.class, "axonServo");
-    AnalogInput axonServo2 = hardwareMap.get(AnalogInput.class, "axonServo2");
-    // Constants
+    private DcMotor intakeDrive, outtakeDrive1, outtakeDrive2 = null;
+    private Servo intakeServoLeft, intakeServoRight, lockServo = null;
+    private CRServo intakeCRSLeft, intakeCRSRight = null;
     public static double INTAKE_SPIN_POWER = 1.0;
     public static double INTAKE_DOWN_LPOSITION = 0.58;
     public static double INTAKE_DOWN_RPOSITION = 0.4;
@@ -31,16 +32,33 @@ public class TwoGamepads extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        initializeHardware();
+        intakeDrive = hardwareMap.get(DcMotor.class, "intakeDrive");
+        outtakeDrive1 = hardwareMap.get(DcMotor.class, "outmoto1");
+        outtakeDrive2 = hardwareMap.get(DcMotor.class, "outmoto2");
+        intakeServoLeft = hardwareMap.get(Servo.class, "intakeServoLeft");
+        intakeServoRight = hardwareMap.get(Servo.class, "intakeServoRight");
+        intakeCRSLeft = hardwareMap.get(CRServo.class, "intakeCRSLeft");
+        intakeCRSRight = hardwareMap.get(CRServo.class, "intakeCRSRight");
+        lockServo = hardwareMap.get(Servo.class, "lockServo");
+
+        intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outtakeDrive1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        outtakeDrive1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        outtakeDrive2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
         // Start threads
         Thread slideControlThread = new Thread(this::handleSlideControls);
-        Thread intakeControlThread = new Thread(t0his::handleIntakeControls);
+        Thread intakeControlThread = new Thread(this::handleIntakeControls);
         Thread manualOverrideThread = new Thread(this::manualOverrideRetract);
         Thread handleIntakeControls = new Thread(this::handleIntakeControls);
         Thread handleSlideControls = new Thread(this::handleSlideControls);
         Thread extendSlides = new Thread(this::extendSlides);
+        Thread extendHalfSlides = new Thread(this::extendHalfSlides);
+
         Thread retractSlides = new Thread(this::retractSlides);
         Thread moveIntakeDown = new Thread(this::moveIntakeDown);
         Thread moveIntakeUp = new Thread(this::moveIntakeUp);
@@ -55,6 +73,7 @@ public class TwoGamepads extends LinearOpMode {
         handleIntakeControls.start();
         handleSlideControls.start();
         extendSlides.start();
+        extendHalfSlides.start();
         retractSlides.start();
         moveIntakeDown.start();
         moveIntakeUp.start();
@@ -82,36 +101,36 @@ public class TwoGamepads extends LinearOpMode {
         stopAllMotors();
     }
 
-    private void initializeHardware() {
-        intakeDrive = hardwareMap.get(DcMotor.class, "intakeDrive");
-        outtakeDrive1 = hardwareMap.get(DcMotor.class, "outmoto1");
-        outtakeDrive2 = hardwareMap.get(DcMotor.class, "outmoto2");
-        intakeServoLeft = hardwareMap.get(Servo.class, "intakeServoLeft");
-        intakeServoRight = hardwareMap.get(Servo.class, "intakeServoRight");
-        intakeCRSLeft = hardwareMap.get(CRServo.class, "intakeCRSLeft");
-        intakeCRSRight = hardwareMap.get(CRServo.class, "intakeCRSRight");
-        lockServo = hardwareMap.get(Servo.class, "lockServo");
-
-        intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        outtakeDrive1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        intakeDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        outtakeDrive1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        outtakeDrive2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    }
+//    private void initializeHardware() {
+//        intakeDrive = hardwareMap.get(DcMotor.class, "intakeDrive");
+//        outtakeDrive1 = hardwareMap.get(DcMotor.class, "outmoto1");
+//        outtakeDrive2 = hardwareMap.get(DcMotor.class, "outmoto2");
+//        intakeServoLeft = hardwareMap.get(Servo.class, "intakeServoLeft");
+//        intakeServoRight = hardwareMap.get(Servo.class, "intakeServoRight");
+//        intakeCRSLeft = hardwareMap.get(CRServo.class, "intakeCRSLeft");
+//        intakeCRSRight = hardwareMap.get(CRServo.class, "intakeCRSRight");
+//        lockServo = hardwareMap.get(Servo.class, "lockServo");
+//
+//        intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        outtakeDrive1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        intakeDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//        intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        outtakeDrive1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        outtakeDrive2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//    }
 
     private void handleSlideControls() {
         while (isRunning) {
             if (gamepad1.right_trigger > 0.5) {
-                extendSlides(FULL_EXTENSION);
+                extendSlides();
                 activateIntake();
                 moveIntakeDown();
                 lockServo.setPosition(LOCK);
             }
 
             if (gamepad1.right_bumper) {
-                extendSlides(HALF_EXTENSION);
+                extendHalfSlides();
                 activateIntake();
                 moveIntakeDown();
                 lockServo.setPosition(LOCK);
@@ -149,8 +168,19 @@ public class TwoGamepads extends LinearOpMode {
         }
     }
 
-    private void extendSlides(int targetPosition) {
-        intakeDrive.setTargetPosition(targetPosition);
+    private void extendSlides() {
+        intakeDrive.setTargetPosition(FULL_EXTENSION);
+        intakeDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        intakeDrive.setPower(1.0);
+        while (intakeDrive.isBusy() && opModeIsActive()) {
+            telemetry.addData("Slide Position", intakeDrive.getCurrentPosition());
+            telemetry.update();
+        }
+        intakeDrive.setPower(0);
+    }
+
+    private void extendHalfSlides() {
+        intakeDrive.setTargetPosition(HALF_EXTENSION);
         intakeDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         intakeDrive.setPower(1.0);
         while (intakeDrive.isBusy() && opModeIsActive()) {

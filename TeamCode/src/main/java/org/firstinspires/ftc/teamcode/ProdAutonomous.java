@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous(name = "EXPDASHAutonomous", group = "Linear OpMode")
 @Config
+@Disabled
 public class ProdAutonomous extends LinearOpMode {
 
     private DcMotor intakeDrive;

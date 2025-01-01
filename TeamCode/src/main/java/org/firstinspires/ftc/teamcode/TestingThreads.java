@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.threadopmode.*;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "guh_edited", group = "Linear OpMode")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp_ThreadTest", group = "Linear OpMode")
 @Config
 public class TestingThreads extends LinearOpMode {
 
