@@ -65,6 +65,8 @@ public class ArmTest extends LinearOpMode {
 
     private DcMotor outmoto1 = null;
     private DcMotor outmoto2 = null;
+    private static final int MIN_POSITION = 0;
+    private static final int MAX_POSITION = 3600;
     private boolean previousAState = false;
     private boolean previousYState = false;
 
@@ -84,9 +86,11 @@ public class ArmTest extends LinearOpMode {
     public double clawPositionOpen = 0.26;
     public double clawPositionClosed = 0.48;
 
+    int depositTargetPosition;
+
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -101,6 +105,13 @@ public class ArmTest extends LinearOpMode {
         outmoto1 = hardwareMap.get(DcMotor.class, "outmoto1");
         outmoto2 = hardwareMap.get(DcMotor.class, "outmoto2");
 
+        outmoto1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outmoto1.setTargetPosition(0);
+        outmoto1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        outmoto1.setPower(0.1);
+        
+
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
@@ -108,34 +119,55 @@ public class ArmTest extends LinearOpMode {
 
         // Wait for the game to start (driver presses START)
         waitForStart();
+
+       // Thread armControl = new Thread(new ArmTest.armController());
+       // Thread depositSlideControl = new Thread(new ArmTest.slideController());
+
+       // armControl.start();
+       // depositSlideControl.start();
+
         runtime.reset();
+        armServo.setPosition(0.15);
+        wristServo.setPosition(wristPositionDown);
+        clawServo.setPosition(clawPositionClosed);
 
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            outmoto1.setPower(-gamepad1.left_stick_y * 0.5);
-            outmoto2.setPower(gamepad2.left_stick_y * 0.5);
 
-            // Setup a variable for each drive wheel to save power level for telemetry
+//            outmoto1.setPower(-gamepad1.right_stick_y * 1);
+//            outmoto2.setPower(gamepad1.right_stick_y * 1);
+
+
+
+//             Setup a variable for each drive wheel to save power level for telemetry
 
 
 
           if (gamepad1.y && !previousYState){
-
-              ServoPosition += 0.02;
+              outmoto1.setTargetPosition(3600);
+              outmoto1.setPower(1);
+              outmoto2.setPower(-outmoto1.getPower());
 
 
             }
           if (gamepad1.a && !previousAState){
-
-              ServoPosition -= 0.02;
-
-
+              outmoto1.setTargetPosition(0);
+              outmoto1.setPower(1);
+              outmoto2.setPower(0);
+              telemetry.addData("yippee", gamepad1.a);
 
           }
 
-            clawServo.setPosition(ServoPosition);
+          if (!outmoto1.isBusy()) {
+              outmoto2.setPower(0);
+
+          }
+
+
+
+            //clawServo.setPosition(ServoPosition);
             previousAState = gamepad1.a;
             previousYState = gamepad1.y;
 
@@ -157,8 +189,45 @@ public class ArmTest extends LinearOpMode {
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("IntakeServoPosition", ServoPosition);
-            telemetry.addData("IntakeServoPosition", outmoto1.getCurrentPosition());
+            telemetry.addData("IntakePosition", outmoto1.getCurrentPosition());
+            telemetry.addData("outmoto1 Power", outmoto1.getPower());
+            telemetry.addData("outmoto2 Power", outmoto2.getPower());
+            telemetry.addData("Target Position", outmoto1.getTargetPosition());
+
+
+
+
             telemetry.update();
+        }
+    }
+
+    private class slideController implements Runnable {
+        @Override
+        public void run() {
+            while (opModeIsActive()) {
+                double joystickInput = -gamepad1.right_stick_y;
+                int depositPosition = outmoto1.getCurrentPosition();
+
+                depositTargetPosition = depositTargetPosition + (int) (joystickInput * 20);
+
+                if (depositTargetPosition < MIN_POSITION) {
+                    depositTargetPosition = MIN_POSITION;
+                } else if (depositTargetPosition > MAX_POSITION) {
+                    depositTargetPosition = MAX_POSITION;
+
+                }
+
+                outmoto1.setTargetPosition(depositTargetPosition);
+                outmoto1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                outmoto1.setPower(1);
+                outmoto2.setPower(-outmoto1.getPower());
+
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

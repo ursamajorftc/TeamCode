@@ -32,7 +32,11 @@ package org.firstinspires.ftc.teamcode;
 import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
+import com.acmerobotics.dashboard.FtcDashboard;
 
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -41,6 +45,10 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 
 
 
@@ -58,7 +66,7 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="intake testing", group="Linear OpMode")
+@TeleOp(name="mainTeleOp", group="Linear OpMode")
 
 public class IntakeTest extends LinearOpMode {
 
@@ -71,15 +79,49 @@ public class IntakeTest extends LinearOpMode {
     private Servo intakeServoLeft = null;
     private Servo lockServo = null;
     private DcMotor intakeDrive = null;
+
+    private Servo clawServo = null;
+    private Servo wristServo = null;
+    private Servo armServo = null;
+
+
+    private DcMotor outmoto1 = null;
+    private DcMotor outmoto2 = null;
     private static final int MIN_POSITION = 0;
     private static final int MAX_POSITION = 950;
     int intakeTargetPosition = 0;
 
+    public double ServoPosition = 0.5;
+
+    //wrist positions
+    public double wristPositionDown = 0;
+    public double wristPositionStraight = 0.62;
+    public double wristPositionOut = 1;
+
+    //arm positions
+    public double armPositionDeposit = 0.1;
+    public double armPositionHover = 0.54;
+    public double armPositionGrab = 0.675;
+
+    //claw positions
+    public double clawPositionOpen = 0.26;
+    public double clawPositionClosed = 0.48;
+
+    private boolean previousDpadDownState = false;
+    private boolean previousDpadUpState = false;
     private boolean previousAState = false;
-    private boolean previousYState = false;
+
+    private boolean previousIntakeState = false;
     private Servo intakeServoRight = null;
 
+    boolean sampleDistanceTriggered = false;
+
+    int state = 0; // Persistent state variable
+    long startTime = 0; // Persistent timer variable
+
     NormalizedColorSensor colorSensor;
+    NormalizedColorSensor sampleDistance;
+
     View relativeLayout;
 
     final float[] hsvValues = new float[3];
@@ -112,7 +154,23 @@ public class IntakeTest extends LinearOpMode {
         intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intakeDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        clawServo = hardwareMap.get(Servo.class, "clawServo");
+        wristServo = hardwareMap.get(Servo.class, "wristServo");
+        armServo = hardwareMap.get(Servo.class, "armServo");
+
+        outmoto1 = hardwareMap.get(DcMotor.class, "outmoto1");
+        outmoto2 = hardwareMap.get(DcMotor.class, "outmoto2");
+
+        outmoto1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outmoto1.setTargetPosition(0);
+        outmoto1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        outmoto1.setPower(0.1);
+
+
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "intakeSensor");
+
+        sampleDistance = hardwareMap.get(NormalizedColorSensor.class, "sampleDistance");
 
 
 
@@ -122,18 +180,40 @@ public class IntakeTest extends LinearOpMode {
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
 
+        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
         // Wait for the game to start (driver presses START)
         waitForStart();
-        Thread intakeControlThread = new Thread(new intakeController());
-        intakeControlThread.start();
+        //Thread intakeControlThread = new Thread(new intakeController());
+        //intakeControlThread.start();
+
+        IntakeController intakeController = new IntakeController(gamepad1, intakeDrive);
         runtime.reset();
+
+        armServo.setPosition(0.15);
+        wristServo.setPosition(wristPositionDown);
+        clawServo.setPosition(clawPositionOpen);
 
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            NormalizedRGBA colors = colorSensor.getNormalizedColors();
 
+            boolean sampleDistanceTriggered = false;
+            long startTime = 0;
+            int state = 0;
+
+            while (opModeIsActive()) {
+                drive.setDrivePowers(new PoseVelocity2d(
+                                new Vector2d(
+                                        -gamepad2.left_stick_y*Math.abs(gamepad2.left_stick_y)*0.85,
+                                        -gamepad2.left_stick_x*Math.abs(gamepad2.left_stick_x) *0.85
+                                ),
+                        (-gamepad2.right_stick_x* Math.abs(gamepad2.right_stick_x) * 0.65)
+                        ));
+            NormalizedRGBA colors = colorSensor.getNormalizedColors();
+            NormalizedRGBA colors1 = sampleDistance.getNormalizedColors();
+
+                intakeController.run();
             /* Use telemetry to display feedback on the driver station. We show the red, green, and blue
              * normalized values from the sensor (in the range of 0 to 1), as well as the equivalent
              * HSV (hue, saturation and value) values. See http://web.archive.org/web/20190311170843/https://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
@@ -144,7 +224,7 @@ public class IntakeTest extends LinearOpMode {
              double color = hsvValues[0];
 
             //intakeDrive.setPower(-gamepad1.left_stick_y * 0.5);
-            new intakeController();
+            //new intakeController();
 
             // Setup a variable for each drive wheel to save power level for telemetry
           if (gamepad1.x){
@@ -157,10 +237,12 @@ public class IntakeTest extends LinearOpMode {
             }
 
 
+
+
           if ( (gamepad1.right_bumper) || (color > 15 && color < 60 ) ){
              // intakeServoPosition += 0.02;
               intakeServoLeft.setPosition(0.32);
-              intakeServoRight.setPosition(0.64);
+              intakeServoRight.setPosition(0.66);
               intakeCRSLeft.setPower(-0.06);
               intakeCRSRight.setPower(0.06);
 
@@ -170,11 +252,17 @@ public class IntakeTest extends LinearOpMode {
 
             }
 
-          if(intakeDrive.getCurrentPosition() < 150){
+          if(intakeDrive.getCurrentPosition() < 150 && previousIntakeState){
               lockServo.setPosition(0.5);
               intakeCRSLeft.setPower(-1);
               intakeCRSRight.setPower(1);
+              previousIntakeState = false;
+
           }
+
+
+
+
 
 
 
@@ -182,7 +270,7 @@ public class IntakeTest extends LinearOpMode {
               //intakeServoPosition -= 0.02;
 
               intakeServoLeft.setPosition(0.48);
-              intakeServoRight.setPosition(0.48);
+              intakeServoRight.setPosition(0.5);
               lockServo.setPosition(0.75);
               intakeCRSLeft.setPower(-1);
               intakeCRSRight.setPower(1);
@@ -191,9 +279,67 @@ public class IntakeTest extends LinearOpMode {
 
           }
 
+            if (gamepad1.dpad_up && previousDpadUpState){
+                outmoto1.setTargetPosition(3600);
+                outmoto1.setPower(1);
+                outmoto2.setPower(-outmoto1.getPower());
+            }
+
+//            if (gamepad1.dpad_down && !previousDpadDownState){
+//                clawServo.setPosition(clawPositionClosed);
+//                sleep(200);
+//                armServo.setPosition(0.15);
+//                wristServo.setPosition(wristPositionDown);
+//                sleep(200);
+//                clawServo.setPosition(clawPositionOpen);
+//
+//                outmoto1.setTargetPosition(0);
+//                outmoto1.setPower(1);
+//                outmoto2.setPower(0);
+//                telemetry.addData("yippee", gamepad1.a);
+//
+//            }
+            updateArmTransfer();
+            updateArmRetract();
+
+            if (!outmoto1.isBusy()) {
+                    outmoto2.setPower(0);
+
+
+                }
+
+
+            if (gamepad1.a){
+                wristServo.setPosition(wristPositionOut);
+                clawServo.setPosition(clawPositionOpen);
+            }
+
             //intakeServoRight.setPosition(intakeServoPosition);
-            previousAState = gamepad1.a;
-            previousYState = gamepad1.y;
+            previousDpadDownState = gamepad1.dpad_down;
+            previousDpadUpState = gamepad1.dpad_up;
+
+            if ((intakeDrive.getCurrentPosition() > 145)) {
+                previousIntakeState = true;
+                if(outmoto1.getCurrentPosition() <15) {
+                    armServo.setPosition(armPositionHover);
+                    clawServo.setPosition(clawPositionOpen);
+                }
+            }
+
+//            if (!sampleDistanceTriggered && (((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM) < 15)) {
+//                sampleDistanceTriggered = true;
+//                armServo.setPosition(armPositionGrab);
+//                clawServo.setPosition(clawPositionClosed);
+//                sleep(500);
+//                armServo.setPosition(0.15);
+//                sleep(750);
+//                wristServo.setPosition(wristPositionStraight);
+//            }
+
+
+
+
+
 
 
             // Choose to drive using either Tank Mode, or POV Mode
@@ -215,36 +361,119 @@ public class IntakeTest extends LinearOpMode {
             telemetry.addData("IntakeServoPosition", intakeServoPosition);
             telemetry.addData("IntakePosition", intakeDrive.getCurrentPosition());
             telemetry.addData("hsv Value:", color);
+            telemetry.addData("Distance", ((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM));
+            telemetry.addData("Deposit Slides", outmoto1.getCurrentPosition());
             telemetry.update();
         }
     }
-    
-    private class intakeController implements Runnable {
-        @Override
-        public void run() {
-            while (opModeIsActive()) {
-                double joystickInput = -gamepad1.left_stick_y;
-                int intakePosition = intakeDrive.getCurrentPosition();
 
-                intakeTargetPosition = intakeTargetPosition + (int)(joystickInput * 40);
+//    private class intakeController implements Runnable {
+//        @Override
+//        public void run() {
+//            while (opModeIsActive()) {
+//                double joystickInput = -gamepad1.left_stick_y;
+//                int intakePosition = intakeDrive.getCurrentPosition();
+//
+//                intakeTargetPosition = intakeTargetPosition + (int)(joystickInput * 40);
+//
+//                if (intakeTargetPosition < MIN_POSITION) {
+//                    intakeTargetPosition = MIN_POSITION;
+//                } else if (intakeTargetPosition > MAX_POSITION) {
+//                    intakeTargetPosition = MAX_POSITION;
+//
+//                }
+//
+//                adb a
+//
+//                try {
+//                    Thread.sleep(20);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//    }
+}
 
-                if (intakeTargetPosition < MIN_POSITION) {
-                    intakeTargetPosition = MIN_POSITION;
-                } else if (intakeTargetPosition > MAX_POSITION) {
-                    intakeTargetPosition = MAX_POSITION;
-                    
-                }
-                
-                intakeDrive.setTargetPosition(intakeTargetPosition);
-                intakeDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                intakeDrive.setPower(1);
-                
-                try {
-                    Thread.sleep(20);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+
+    public void updateArmRetract() {
+
+        if (gamepad1.dpad_down) {
+            startTime = System.currentTimeMillis();
+            state = 1;
+            previousDpadDownState = true;
+        }
+
+        if (previousDpadDownState) {
+            long elapsedTime = System.currentTimeMillis() - startTime;
+
+            switch (state) {
+                case 1:
+                    clawServo.setPosition(clawPositionClosed);
+                    state = 2;
+                    startTime = System.currentTimeMillis();
+                    break;
+                case 2:
+                    if (elapsedTime > 200) {
+                        armServo.setPosition(0.15);
+                        wristServo.setPosition(wristPositionDown);
+                        state = 3;
+                        startTime = System.currentTimeMillis();
+                    }
+                    break;
+
+                case 3:
+                    if(elapsedTime > 200) {
+                        clawServo.setPosition(clawPositionOpen);
+
+                        outmoto1.setTargetPosition(0);
+                        outmoto1.setPower(1);
+                        outmoto2.setPower(0);
+                        telemetry.addData("yippee", gamepad1.a);
+                        state = 0;
+                    }
+                    break;
+
+            }
+        }
+
+
+
+    }
+    public void updateArmTransfer() {
+        if (!sampleDistanceTriggered && ((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM) < 15) {
+            sampleDistanceTriggered = true;
+            startTime = System.currentTimeMillis();
+            state = 1; // Start the state machine
+        }
+
+        if (sampleDistanceTriggered) {
+            long elapsedTime = System.currentTimeMillis() - startTime;
+
+            switch (state) {
+                case 1:
+                    armServo.setPosition(armPositionGrab);
+                    clawServo.setPosition(clawPositionClosed);
+                    state = 2;
+                    startTime = System.currentTimeMillis(); // Reset timer
+                    break;
+
+                case 2:
+                    if (elapsedTime >= 500) {
+                        armServo.setPosition(0.15);
+                        state = 3;
+                        startTime = System.currentTimeMillis(); // Reset timer
+                    }
+                    break;
+
+                case 3:
+                    if (elapsedTime >= 750) {
+                        wristServo.setPosition(wristPositionStraight);
+                        state = 0; // End the state machine
+                    }
+                    break;
             }
         }
     }
+
 }

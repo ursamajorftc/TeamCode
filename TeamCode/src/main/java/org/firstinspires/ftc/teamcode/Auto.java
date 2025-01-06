@@ -84,7 +84,6 @@ public class Auto extends LinearOpMode {
 
         // Autonomous example: Wait for 3 seconds then stop
         while (opModeIsActive()) {
-
         }
 
         // Stop intake motors after the autonomous actions are done
