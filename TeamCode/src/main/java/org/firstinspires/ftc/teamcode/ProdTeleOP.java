@@ -89,7 +89,10 @@ public class ProdTeleOP extends LinearOpMode {
         // Config motor
         intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtakeDrive1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // DB - Check this line
         intakeDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         intakeDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         outtakeDrive1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         outtakeDrive2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
