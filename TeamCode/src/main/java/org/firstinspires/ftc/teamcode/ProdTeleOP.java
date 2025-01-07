@@ -4,7 +4,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -14,6 +16,7 @@ import java.util.concurrent.locks.Lock;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "guh", group = "Linear OpMode")
 @Config
+@Disabled
 public class ProdTeleOP extends LinearOpMode {
 
     private DcMotor intakeDrive;
@@ -25,20 +28,22 @@ public class ProdTeleOP extends LinearOpMode {
     private CRServo intakeCRSLeft;
     private CRServo intakeCRSRight;
     private Servo armServo;
-    private Servo fingerServo;
+    private Servo clawServo;
 
     private Servo wristServo;
     private Servo lockServo;
-
+    private AnalogInput AxonServo1;
+    private AnalogInput AxonServo2;
 
     @Override
+
     public void resetRuntime() {
         super.resetRuntime();
     }
 
 
-    public static double ARMGRAB = -0.3; // arm at 90 degrees paralell with the intake
-    public static double WRIST90 = 0.5; // pos for graby graby block
+    public static double ARMGRAB = -0.3; // arm at 90 degrees parallel with the intake
+    public static double WRIST90 = 0.5; // pos for grabby grabby block
     public static double FINGEROPEN = 0.4; // pos for open finger
     public static double FINGERCLOSE = 0; // pos for close finger
     public static int ARMVERTICAL = 0; // VERTICAL WITH RAILS
@@ -74,12 +79,14 @@ public class ProdTeleOP extends LinearOpMode {
         intakeServoRight = hardwareMap.get(Servo.class, "intakeServoRight");
         intakeCRSLeft = hardwareMap.get(CRServo.class, "intakeCRSLeft");
         intakeCRSRight = hardwareMap.get(CRServo.class, "intakeCRSRight");
-        fingerServo = hardwareMap.get(Servo.class, "fingerServo");
+        clawServo = hardwareMap.get(Servo.class, "clawServo");
         wristServo = hardwareMap.get(Servo.class, "wristServo");
         armServo = hardwareMap.get(Servo.class, "armServo");
         lockServo = hardwareMap.get(Servo.class, "lockServo");
         outtakeDrive1 = hardwareMap.get(DcMotor.class, "outmoto1");
         outtakeDrive2 = hardwareMap.get(DcMotor.class, "outmoto2");
+        AxonServo1 = hardwareMap.get(AnalogInput.class, "axonServo1");
+        AxonServo2 = hardwareMap.get(AnalogInput.class,"axonServo2");
         // Distance sensor object
         // DistanceSensor distanceSensor = hardwareMap.get(DistanceSensor.class, "sensor_distance");
 
@@ -180,7 +187,7 @@ public class ProdTeleOP extends LinearOpMode {
         intakeDrive.setPower(0.0); // Stop motor after reaching the target
     }
     public void moveVertSlidesToPos(int targetPosition, double maxPower) {
-        fingerServo.setPosition(FINGERCLOSE);
+        clawServo.setPosition(FINGERCLOSE);
         armServo.setPosition(ARMVERTICAL);
         outtakeDrive1.setTargetPosition(targetPosition);
         outtakeDrive2.setTargetPosition(-targetPosition);
@@ -198,8 +205,8 @@ public class ProdTeleOP extends LinearOpMode {
         }
         wristServo.setPosition(WRISTSCORE);
 
-        fingerServo.setPosition(FINGEROPEN);
-        fingerServo.setPosition(FINGERCLOSE);
+        clawServo.setPosition(FINGEROPEN);
+        clawServo.setPosition(FINGERCLOSE);
         wristServo.setPosition(WRIST90);
         outtakeDrive1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         outtakeDrive2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -244,6 +251,24 @@ private void retractSlide() {
     private void stopIntake() {
         intakeCRSLeft.setPower(0);
         intakeCRSRight.setPower(0);
+    }
+    private void manualOverrideRetract() {
+        telemetry.addLine("Manual Override: Retracting Slides");
+        telemetry.update();
+        intakeDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeDrive.setPower(-1);
+        intakeServoLeft.setPosition(INTAKE_UP_LPOSITION);
+        intakeServoRight.setPosition(INTAKE_UP_RPOSITION);
+
+        while (opModeIsActive() && gamepad1.left_bumper) {
+            telemetry.addData("Manual Retraction", "Hold to Retract");
+            telemetry.update();
+        }
+        intakeDrive.setPower(0);
+        intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        telemetry.addLine("Manual Override Complete: Encoder Reset");
+        telemetry.update();
     }
 
 }
