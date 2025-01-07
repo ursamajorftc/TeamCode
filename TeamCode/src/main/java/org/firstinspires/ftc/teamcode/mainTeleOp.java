@@ -32,7 +32,6 @@ package org.firstinspires.ftc.teamcode;
 import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
-import com.acmerobotics.dashboard.FtcDashboard;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
@@ -395,7 +394,7 @@ public class IntakeTest extends LinearOpMode {
 //    }
 }
 
-
+// to make sure that the thread doesn't hinder other operations
     public void updateArmRetract() {
 
         if (gamepad1.dpad_down) {
