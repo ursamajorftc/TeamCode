@@ -67,7 +67,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp(name="mainTeleOp", group="Linear OpMode")
 
-public class IntakeTest extends LinearOpMode {
+public class mainTeleOp extends LinearOpMode {
 
     // Declare OpMode members.
 
