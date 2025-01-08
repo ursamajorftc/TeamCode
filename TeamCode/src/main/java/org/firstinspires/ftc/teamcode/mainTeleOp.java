@@ -45,7 +45,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
-
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
@@ -242,8 +243,8 @@ public class mainTeleOp extends LinearOpMode {
              // intakeServoPosition += 0.02;
               intakeServoLeft.setPosition(0.32);
               intakeServoRight.setPosition(0.66);
-              intakeCRSLeft.setPower(-0.06);
-              intakeCRSRight.setPower(0.06);
+              intakeCRSLeft.setPower(-0.15);
+              intakeCRSRight.setPower(0.15);
 
 
               //intake goes up
@@ -268,9 +269,9 @@ public class mainTeleOp extends LinearOpMode {
           if ((gamepad1.right_trigger > 0.25) ){
               //intakeServoPosition -= 0.02;
 
-              intakeServoLeft.setPosition(0.48);
-              intakeServoRight.setPosition(0.5);
-              lockServo.setPosition(0.75);
+              intakeServoLeft.setPosition(0.54);
+              intakeServoRight.setPosition(0.46);
+              lockServo.setPosition(0.25);
               intakeCRSLeft.setPower(-1);
               intakeCRSRight.setPower(1);
 
@@ -299,7 +300,7 @@ public class mainTeleOp extends LinearOpMode {
 //
 //            }
             updateArmTransfer();
-            updateArmRetract();
+            updateArmRetracty();
 
             if (!outmoto1.isBusy()) {
                     outmoto2.setPower(0);
@@ -313,11 +314,16 @@ public class mainTeleOp extends LinearOpMode {
                 clawServo.setPosition(clawPositionOpen);
             }
 
+            if (gamepad1.y) {
+                intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                outmoto1.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
+            }
+
             //intakeServoRight.setPosition(intakeServoPosition);
             previousDpadDownState = gamepad1.dpad_down;
             previousDpadUpState = gamepad1.dpad_up;
 
-            if ((intakeDrive.getCurrentPosition() > 145)) {
+            if ((intakeDrive.getCurrentPosition() > 145) && outmoto1.getCurrentPosition()<100) {
                 previousIntakeState = true;
                 if(outmoto1.getCurrentPosition() <15) {
                     armServo.setPosition(armPositionHover);
@@ -395,50 +401,10 @@ public class mainTeleOp extends LinearOpMode {
 }
 
 // to make sure that the thread doesn't hinder other operations
-    public void updateArmRetract() {
-
-        if (gamepad1.dpad_down) {
-            startTime = System.currentTimeMillis();
-            state = 1;
-            previousDpadDownState = true;
-        }
-
-        if (previousDpadDownState) {
-            long elapsedTime = System.currentTimeMillis() - startTime;
-
-            switch (state) {
-                case 1:
-                    clawServo.setPosition(clawPositionClosed);
-                    state = 2;
-                    startTime = System.currentTimeMillis();
-                    break;
-                case 2:
-                    if (elapsedTime > 200) {
-                        armServo.setPosition(0.15);
-                        wristServo.setPosition(wristPositionDown);
-                        state = 3;
-                        startTime = System.currentTimeMillis();
-                    }
-                    break;
-
-                case 3:
-                    if(elapsedTime > 200) {
-                        clawServo.setPosition(clawPositionOpen);
-
-                        outmoto1.setTargetPosition(0);
-                        outmoto1.setPower(1);
-                        outmoto2.setPower(0);
-                        telemetry.addData("yippee", gamepad1.a);
-                        state = 0;
-                    }
-                    break;
-
-            }
-        }
 
 
 
-    }
+
     public void updateArmTransfer() {
         if (!sampleDistanceTriggered && ((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM) < 15) {
             sampleDistanceTriggered = true;
@@ -452,26 +418,111 @@ public class mainTeleOp extends LinearOpMode {
             switch (state) {
                 case 1:
                     armServo.setPosition(armPositionGrab);
-                    clawServo.setPosition(clawPositionClosed);
+                    clawServo.setPosition(clawPositionOpen);
+                    wristServo.setPosition(wristPositionDown);
                     state = 2;
                     startTime = System.currentTimeMillis(); // Reset timer
                     break;
 
                 case 2:
-                    if (elapsedTime >= 500) {
-                        armServo.setPosition(0.15);
+                    if (elapsedTime >= 150) {
+
+                        clawServo.setPosition(clawPositionClosed);
                         state = 3;
                         startTime = System.currentTimeMillis(); // Reset timer
                     }
                     break;
 
                 case 3:
+                    if (elapsedTime >= 200) {
+
+                        armServo.setPosition(0.15);
+                        state = 4;
+                        startTime = System.currentTimeMillis(); // Reset timer
+                    }
+                    break;
+
+                case 4:
                     if (elapsedTime >= 750) {
                         wristServo.setPosition(wristPositionStraight);
-                        state = 0; // End the state machine
+                        state = 0;
+                        sampleDistanceTriggered = false;
+
+                        // End the state machine
                     }
                     break;
             }
+        }
+    }
+
+    private enum RobotState {
+        IDLE,
+        CLOSE_CLAW,
+        MOVE_ARM,
+        MOVE_WRIST,
+        OPEN_CLAW,
+        COMPLETE
+    }
+
+    private RobotState currentState = RobotState.IDLE;
+    private long stateStartTime = 0;
+
+
+    public void updateArmRetracty() {
+        // Get the current time in milliseconds
+        long currentTime = System.currentTimeMillis();
+
+        switch (currentState) {
+            case IDLE:
+                if (gamepad1.dpad_down && !previousAState) {
+                    // Transition to CLOSE_CLAW state
+                    clawServo.setPosition(clawPositionClosed);
+                    stateStartTime = currentTime; // Record the time
+                    currentState = RobotState.CLOSE_CLAW;
+                }
+                break;
+
+            case CLOSE_CLAW:
+                if (currentTime - stateStartTime >= 200) { // Wait 200ms
+                    armServo.setPosition(0.15);
+                    stateStartTime = currentTime;
+                    currentState = RobotState.MOVE_ARM;
+                }
+                break;
+
+            case MOVE_ARM:
+                if (currentTime - stateStartTime >= 200) { // Wait 200ms
+                    wristServo.setPosition(wristPositionDown);
+                    stateStartTime = currentTime;
+                    currentState = RobotState.MOVE_WRIST;
+                }
+                break;
+
+            case MOVE_WRIST:
+                if (currentTime - stateStartTime >= 200) { // Wait 200ms
+                    clawServo.setPosition(clawPositionOpen);
+                    stateStartTime = currentTime;
+                    currentState = RobotState.OPEN_CLAW;
+                }
+                break;
+
+            case OPEN_CLAW:
+                if (currentTime - stateStartTime >= 200) { // Wait 200ms
+                    outmoto1.setTargetPosition(0);
+                    outmoto1.setPower(1);
+                    outmoto2.setPower(0);
+                    telemetry.addData("yippee", gamepad1.a);
+                    stateStartTime = currentTime;
+                    currentState = RobotState.COMPLETE;
+                }
+                break;
+
+            case COMPLETE:
+                if (currentTime-stateStartTime > 200) {
+                    currentState = RobotState.IDLE;
+                }
+                // All actions complete; stay idle or transition as needed
+                break;
         }
     }
 
