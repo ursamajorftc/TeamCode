@@ -33,6 +33,7 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -48,6 +49,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 
 
@@ -72,7 +74,7 @@ public class mainTeleOp extends LinearOpMode {
 
     // Declare OpMode members.
 
-    
+    private FtcDashboard dashboard;
     private ElapsedTime runtime = new ElapsedTime();
     private CRServo intakeCRSLeft = null;
     private CRServo intakeCRSRight = null;
@@ -135,6 +137,7 @@ public class mainTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException{
+        dashboard = FtcDashboard.getInstance();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -166,10 +169,8 @@ public class mainTeleOp extends LinearOpMode {
         outmoto1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         outmoto1.setPower(0.1);
-
-
+        VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "intakeSensor");
-
         sampleDistance = hardwareMap.get(NormalizedColorSensor.class, "sampleDistance");
 
 
@@ -192,7 +193,6 @@ public class mainTeleOp extends LinearOpMode {
 
         armServo.setPosition(0.15);
         wristServo.setPosition(wristPositionDown);
-        clawServo.setPosition(clawPositionOpen);
 
 
         // run until the end of the match (driver presses STOP)
@@ -316,7 +316,6 @@ public class mainTeleOp extends LinearOpMode {
 
             if (gamepad1.y) {
                 intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                outmoto1.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
             }
 
             //intakeServoRight.setPosition(intakeServoPosition);
@@ -340,12 +339,7 @@ public class mainTeleOp extends LinearOpMode {
 //                sleep(750);
 //                wristServo.setPosition(wristPositionStraight);
 //            }
-
-
-
-
-
-
+                TelemetryPacket packet = new TelemetryPacket();
 
             // Choose to drive using either Tank Mode, or POV Mode
             // Comment out the method that's not used.  The default below is POV.
@@ -362,6 +356,18 @@ public class mainTeleOp extends LinearOpMode {
             // Send calculated power to wheels
 
             // Show the elapsed game time and wheel power.
+            packet.put("Status", "Run Time: " + runtime.toString());
+            packet.put("IntakeServoPosition", intakeServoPosition);
+            packet.put("IntakePosition", intakeDrive.getCurrentPosition());
+            packet.put("HSV Value", color);
+            packet.put("Distance", ((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM));
+            packet.put("Deposit Slides",  outmoto1.getCurrentPosition());
+            double batteryVoltage = voltageSensor.getVoltage();
+            packet.put("Battery Voltage", batteryVoltage);
+            dashboard.sendTelemetryPacket(packet);
+
+            telemetry.addData("Battery Voltage", batteryVoltage);
+            telemetry.update();
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("IntakeServoPosition", intakeServoPosition);
             telemetry.addData("IntakePosition", intakeDrive.getCurrentPosition());
