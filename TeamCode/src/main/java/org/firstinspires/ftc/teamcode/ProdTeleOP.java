@@ -104,7 +104,7 @@ public class ProdTeleOP extends LinearOpMode {
         outtakeDrive1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         outtakeDrive2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        waitForStart();
+        wait();
 
         while (opModeIsActive()) {
             telemetry.addData("Vert Motor 1 Position", outtakeDrive1.getCurrentPosition());
