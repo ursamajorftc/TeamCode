@@ -212,18 +212,26 @@ public class TwoGamepads extends LinearOpMode {
         telemetry.addLine("Manual Override: Retracting Slides");
         telemetry.update();
         intakeDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeDrive.setPower(-1);
+        outtakeDrive1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeDrive.setPower(-0.2);
+        outtakeDrive1.setPower(-1);
+        outtakeDrive2.setPower(-1);
         intakeServoLeft.setPosition(INTAKE_UP_LPOSITION);
         intakeServoRight.setPosition(INTAKE_UP_RPOSITION);
-
-        while (opModeIsActive() && gamepad1.left_bumper) {
+        while (opModeIsActive() && gamepad2.y) {
             telemetry.addData("Manual Retraction", "Hold to Retract");
             telemetry.update();
         }
         intakeDrive.setPower(0);
+        outtakeDrive1.setPower(0);
+        outtakeDrive2.setPower(0);
         intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outtakeDrive1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intakeDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        outtakeDrive1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         telemetry.addLine("Manual Override Complete: Encoder Reset");
         telemetry.update();
     }
+
+
 }

@@ -242,7 +242,7 @@ public class mainTeleOp extends LinearOpMode {
           if ( (gamepad1.right_bumper) || (color > 15 && color < 60 ) ){
              // intakeServoPosition += 0.02;
               intakeServoLeft.setPosition(0.32);
-              intakeServoRight.setPosition(0.66);
+              intakeServoRight.setPosition(0.695);
               intakeCRSLeft.setPower(-0.15);
               intakeCRSRight.setPower(0.15);
 
@@ -270,7 +270,7 @@ public class mainTeleOp extends LinearOpMode {
               //intakeServoPosition -= 0.02;
 
               intakeServoLeft.setPosition(0.54);
-              intakeServoRight.setPosition(0.46);
+              intakeServoRight.setPosition(0.45);
               lockServo.setPosition(0);
               intakeCRSLeft.setPower(-1);
               intakeCRSRight.setPower(1);
@@ -314,7 +314,7 @@ public class mainTeleOp extends LinearOpMode {
                 clawServo.setPosition(clawPositionOpen);
             }
 
-            if (gamepad2.y) {
+            if (gamepad1.y) {
                 intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 outmoto1.setMode((DcMotor.RunMode.STOP_AND_RESET_ENCODER));
             }
