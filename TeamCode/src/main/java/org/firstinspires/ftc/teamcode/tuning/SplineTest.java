@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.TankDrive;
 
 public final class SplineTest extends LinearOpMode {
     public Pose2d corner(int angle){
-        return new Pose2d(-64, -44, Math.toRadians(angle));
+        return new Pose2d(-6, -44, Math.toRadians(angle));
     }
     @Override
     public void runOpMode() throws InterruptedException {
