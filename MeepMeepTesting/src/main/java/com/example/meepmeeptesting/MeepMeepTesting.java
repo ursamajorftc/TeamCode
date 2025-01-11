@@ -13,25 +13,61 @@ public class MeepMeepTesting {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 19.544)
                 .build();
 
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-33, -62, Math.toRadians(0)))
-//                .setTangent(45)
+                //spline to bucket
                 .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(45)), -pi/8)
                 .waitSeconds(1)
-//                .splineToLinearHeading((new Pose2d(-55, -55, Math.toRadians(76.79169703))), 0)
-                        .turn(Math.toRadians(31.79169703))
-                .waitSeconds(1)
-//
-                .turn(Math.toRadians(17.18630621))
-                .waitSeconds(1)
-                .turn(Math.toRadians(17.36528606))
-                .waitSeconds(1)
-                .splineToLinearHeading(new Pose2d(-55, -55, 0), 0)
-                        .lineToX(62)
-                        .waitSeconds(1)
 
+                //code to drop off sample (top bucket)
+
+
+                //face first sample
+                .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(76.79)), -pi/8)
+                .waitSeconds(1)
+
+                //grab
+
+
+                //rotate to bucket
+                .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(45)), -pi/8)
+                .waitSeconds(1)
+
+                //drop sample
+
+
+                //face second sample
+                .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(93.98)), -pi/8)
+                .waitSeconds(1)
+
+                //grab
+
+
+                //rotate to bucket
+                .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(45)), -pi/8)
+                .waitSeconds(1)
+
+                //drop sample
+
+
+                //face third sample
+                .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(111.345)), -pi/8)
+                .waitSeconds(1)
+
+                //grab
+
+
+                //face bucket
+                .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(45)), -pi/8)
+
+                //drop sample
+
+
+                //park
+                .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(100)), -pi/8)
+                .splineTo(new Vector2d(-25, -11.5), 0)
 
                 .build());
 
