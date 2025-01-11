@@ -24,7 +24,7 @@ public final class SplineTest extends LinearOpMode {
             waitForStart();
 
             Actions.runBlocking(
-                    drive.actionBuilder(new Pose2d(-33, -62, Math.toRadians(0)))
+                    drive.actionBuilder(new Pose2d(33, -62, Math.toRadians(0)))
                             .splineToLinearHeading(corner(45), -pi/4)
                             .waitSeconds(1)
 
