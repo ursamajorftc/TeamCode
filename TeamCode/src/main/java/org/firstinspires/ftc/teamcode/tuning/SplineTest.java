@@ -24,11 +24,11 @@ public final class SplineTest extends LinearOpMode {
             waitForStart();
 
             Actions.runBlocking(
-                drive.actionBuilder(new Pose2d(-33, -62, Math.toRadians(0)))
-                        .splineToLinearHeading(corner(45), -pi/4)
-                        .waitSeconds(1)
+                    drive.actionBuilder(new Pose2d(-33, -62, Math.toRadians(0)))
+                            .splineToLinearHeading(corner(45), -pi/4)
+                            .waitSeconds(1)
 
-                        //code to drop off sample (top bucket)
+                            //code to drop off sample (top bucket)
 
 
 //                        //face first sample
@@ -75,7 +75,7 @@ public final class SplineTest extends LinearOpMode {
 //                        //park
 //                        .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(100)), -pi/8)
 //                        .splineTo(new Vector2d(-25, -11.5), 0)
-                    .build());
+                            .build());
         } else if (TuningOpModes.DRIVE_CLASS.equals(TankDrive.class)) {
             TankDrive drive = new TankDrive(hardwareMap, beginPose);
 
