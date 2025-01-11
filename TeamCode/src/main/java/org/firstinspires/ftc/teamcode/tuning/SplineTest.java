@@ -20,7 +20,7 @@ public final class SplineTest extends LinearOpMode {
         Pose2d beginPose = new Pose2d(-33, -62, Math.toRadians(0));
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class)) {
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-
+            
             waitForStart();
 
             Actions.runBlocking(
@@ -29,7 +29,7 @@ public final class SplineTest extends LinearOpMode {
                             .waitSeconds(1)
 
                             //code to drop off sample (top bucket)
-                            
+
 //                        //face first sample
 //                        .splineToLinearHeading(corner(76.79), -pi/8)
 //                        .waitSeconds(1)
