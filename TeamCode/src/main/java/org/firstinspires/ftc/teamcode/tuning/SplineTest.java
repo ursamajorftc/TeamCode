@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.TankDrive;
 
 public final class SplineTest extends LinearOpMode {
     public Pose2d corner(int angle){
-        return new Pose2d(-6, -44, Math.toRadians(angle));
+        return new Pose2d(-62, -44, Math.toRadians(angle));
     }
     @Override
     public void runOpMode() throws InterruptedException {
@@ -21,11 +21,11 @@ public final class SplineTest extends LinearOpMode {
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class)) {
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
 
-            
+
             waitForStart();
 
             Actions.runBlocking(
-                    drive.actionBuilder(new Pose2d(33, -62, Math.toRadians(0)))
+                    drive.actionBuilder(new Pose2d(-33, -62, Math.toRadians(0)))
                             .splineToLinearHeading(corner(45), -pi/4)
                             .waitSeconds(1)
 
