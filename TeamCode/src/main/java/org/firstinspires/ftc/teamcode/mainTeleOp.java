@@ -461,7 +461,7 @@ public class mainTeleOp extends LinearOpMode {
         }
     }
 
-    private enum RobotState {
+    enum RobotState {
         IDLE,
         CLOSE_CLAW,
         MOVE_ARM,
