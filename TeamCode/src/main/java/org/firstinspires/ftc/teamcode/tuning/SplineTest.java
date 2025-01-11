@@ -29,8 +29,7 @@ public final class SplineTest extends LinearOpMode {
                             .waitSeconds(1)
 
                             //code to drop off sample (top bucket)
-
-
+                            
 //                        //face first sample
 //                        .splineToLinearHeading(corner(76.79), -pi/8)
 //                        .waitSeconds(1)
