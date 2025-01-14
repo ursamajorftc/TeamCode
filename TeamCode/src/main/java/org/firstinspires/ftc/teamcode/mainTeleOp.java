@@ -328,7 +328,7 @@ public class mainTeleOp extends LinearOpMode {
 
             //intakeServoRight.setPosition(intakeServoPosition);
             previousDpadDownState = gamepad1.dpad_down;
-            previousDpadUpState = gamepad1.dpad_up; 
+            previousDpadUpState = gamepad1.dpad_up;
             PreviousDpadLeftState = gamepad1.dpad_left;
 
 

@@ -49,7 +49,11 @@ public class rrAuto extends LinearOpMode {
     private DcMotor outmoto1 = null;
     private DcMotor outmoto2 = null;
     private static final int MIN_POSITION = 0;
-    private static final int MAX_POSITION = 950;
+    private static final int INTAKE_POSITION1 = 950;
+    private static final int INTAKE_POSITION2 = 950;
+    private static final int INTAKE_POSITION3 = 950;
+
+
     int intakeTargetPosition = 0;
 
     public double ServoPosition = 0.5;
@@ -226,6 +230,7 @@ public class rrAuto extends LinearOpMode {
                 outmoto2.setPower(0);
             }
             updateArmRetracty();
+            intakeDrive.setTargetPosition(intakeTargetPosition);
             if (intakeScoreState) {
                 state = 1;
                 telemetry.addData("hello", intakeScoreState);
@@ -409,6 +414,9 @@ public class rrAuto extends LinearOpMode {
                 break;
         }
     }
+
+
+
 
 
 
