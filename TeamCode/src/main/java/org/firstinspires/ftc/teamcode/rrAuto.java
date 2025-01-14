@@ -94,7 +94,7 @@ public class rrAuto extends LinearOpMode {
 
     public double intakeServoPosition = 0;
     public Pose2d corner(int angle){
-        return new Pose2d(-62, -43, Math.toRadians(angle));
+        return new Pose2d(-63, -43, Math.toRadians(angle));
     }
     @Override
     public void runOpMode() throws InterruptedException {
