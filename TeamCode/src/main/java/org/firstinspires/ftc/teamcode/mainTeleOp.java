@@ -111,6 +111,7 @@ public class mainTeleOp extends LinearOpMode {
 
     private boolean previousDpadDownState = false;
     private boolean previousDpadUpState = false;
+    private boolean PreviousDpadLeftState = false;
     private boolean previousAState = false;
 
     private boolean previousIntakeState = false;
@@ -175,7 +176,8 @@ public class mainTeleOp extends LinearOpMode {
 
 
 
-
+        armServo.setPosition(0.15);
+        wristServo.setPosition(wristPositionDown);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
@@ -285,6 +287,12 @@ public class mainTeleOp extends LinearOpMode {
                 outmoto2.setPower(-outmoto1.getPower());
             }
 
+            if (gamepad1.dpad_left && PreviousDpadLeftState){
+                outmoto1.setTargetPosition(1600);
+                outmoto1.setPower(1);
+                outmoto2.setPower(-outmoto1.getPower());
+            }
+
 //            if (gamepad1.dpad_down && !previousDpadDownState){
 //                clawServo.setPosition(clawPositionClosed);
 //                sleep(200);
@@ -320,7 +328,10 @@ public class mainTeleOp extends LinearOpMode {
 
             //intakeServoRight.setPosition(intakeServoPosition);
             previousDpadDownState = gamepad1.dpad_down;
-            previousDpadUpState = gamepad1.dpad_up;
+            previousDpadUpState = gamepad1.dpad_up; 
+            PreviousDpadLeftState = gamepad1.dpad_left;
+
+
 
             if ((intakeDrive.getCurrentPosition() > 145) && outmoto1.getCurrentPosition()<100) {
                 previousIntakeState = true;

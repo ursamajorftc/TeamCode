@@ -128,14 +128,18 @@ public class rrAuto extends LinearOpMode {
         VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "intakeSensor");
         sampleDistance = hardwareMap.get(NormalizedColorSensor.class, "sampleDistance");
+
         double pi = Math.PI;
         Arm arm = new Arm();
         DepositLift depositLift = new DepositLift();
+        clawServo.setPosition(clawPositionClosed);
+        sleep(250);
+        armServo.setPosition(0.15);
+        wristServo.setPosition(wristPositionDown);
 
         Pose2d beginPose = new Pose2d(-33, -62, Math.toRadians(0));
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class)) {
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
-
             Action trajectoryBucket = drive.actionBuilder(beginPose)
                     .splineToLinearHeading(corner(45), -pi/4)
 

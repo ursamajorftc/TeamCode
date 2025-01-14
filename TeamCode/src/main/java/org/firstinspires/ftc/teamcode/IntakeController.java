@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class IntakeController {
     private static final int MIN_POSITION = 0;
-    private static final int MAX_POSITION = 950;
+    private static final int MAX_POSITION = 880;
     int intakeTargetPosition = 0;
 
     Gamepad gamepad1;
