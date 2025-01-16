@@ -282,13 +282,13 @@ public class mainTeleOp extends LinearOpMode {
           }
 
             if (gamepad1.dpad_up && previousDpadUpState){
-                outmoto1.setTargetPosition(3600);
+                outmoto1.setTargetPosition(2300);
                 outmoto1.setPower(1);
                 outmoto2.setPower(-outmoto1.getPower());
             }
 
             if (gamepad1.dpad_left && PreviousDpadLeftState){
-                outmoto1.setTargetPosition(1600);
+                outmoto1.setTargetPosition(1160);
                 outmoto1.setPower(1);
                 outmoto2.setPower(-outmoto1.getPower());
             }
