@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 // RR-specific imports
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
@@ -77,6 +78,7 @@ public class rrAuto extends LinearOpMode {
     private boolean previousAState = false;
 
     private boolean previousIntakeState = false;
+    private boolean intakeComplete = false;
     private Servo intakeServoRight = null;
 
     boolean sampleDistanceTriggered = false;
@@ -136,10 +138,13 @@ public class rrAuto extends LinearOpMode {
         double pi = Math.PI;
         Arm arm = new Arm();
         DepositLift depositLift = new DepositLift();
+        Intake intake = new Intake();
         clawServo.setPosition(clawPositionClosed);
         sleep(250);
         armServo.setPosition(0.15);
         wristServo.setPosition(wristPositionDown);
+        intakeServoLeft.setPosition(0.32);
+        intakeServoRight.setPosition(0.695);
 
         Pose2d beginPose = new Pose2d(-33, -62, Math.toRadians(0));
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class)) {
@@ -156,13 +161,11 @@ public class rrAuto extends LinearOpMode {
 
             Actions.runBlocking(
                     new SequentialAction(
-                            trajectoryBucket,
+//                            trajectoryBucket,
                             arm.bottomArmPos(),
-                            depositLift.depositUp(),
-                            waitingTrajectory,
-                            arm.scoreArmPos(),
-                            waitingTrajectory,
-                            depositLift.depositDown()
+                            intake.intakeOut()
+//                            depositLift.depositUp(),
+//                            depositLift.depositDown()
 
                     )
             );
@@ -226,54 +229,78 @@ public class rrAuto extends LinearOpMode {
         }
 
         while (opModeIsActive()) {
+
             if (!outmoto1.isBusy()) {
                 outmoto2.setPower(0);
             }
+
+            if (!intakeComplete) {
+                intakeMovement();
+            }
+
+
             updateArmRetracty();
             intakeDrive.setTargetPosition(intakeTargetPosition);
-            if (intakeScoreState) {
-                state = 1;
-                telemetry.addData("hello", intakeScoreState);
-                telemetry.update();
-                wristServo.setPosition(wristPositionOut);
-                sleep(250);
-                clawServo.setPosition(clawPositionOpen);
-                sleep(800);
-                clawServo.setPosition(clawPositionClosed);
-                intakeScoreState = false;
-
-//               long elapsedTime = System.currentTimeMillis() - startTime;
+//            if (intakeScoreState) {
+//                state = 1;
+//                telemetry.addData("hello", intakeScoreState);
+//                telemetry.update();
+//                wristServo.setPosition(wristPositionOut);
+//                sleep(250);
+//                clawServo.setPosition(clawPositionOpen);
+//                sleep(800);
+//                clawServo.setPosition(clawPositionClosed);
+//                intakeScoreState = false;
 //
-//               switch (state) {
-//                   case 1:
+////               long elapsedTime = System.currentTimeMillis() - startTime;
+////
+////               switch (state) {
+////                   case 1:
+////
+////                       wristServo.setPosition(wristPositionOut);
+////                       state = 2;
+////                       telemetry.addData("state", state);
+////                       telemetry.update();
+////                       startTime = System.currentTimeMillis(); // Reset timer
+////                       break;
+////
+////                   case 2:
+////                       if (elapsedTime >= 150) {
+////
+////                           clawServo.setPosition(clawPositionOpen);
+////                           state = 3;
+////                           startTime = System.currentTimeMillis(); // Reset timer
+////                       }
+////                       break;
+////                   case 3:
+////                       state = 0;
+////                       intakeScoreState = false;
+////                       break;
 //
-//                       wristServo.setPosition(wristPositionOut);
-//                       state = 2;
-//                       telemetry.addData("state", state);
-//                       telemetry.update();
-//                       startTime = System.currentTimeMillis(); // Reset timer
-//                       break;
+////            }
 //
-//                   case 2:
-//                       if (elapsedTime >= 150) {
 //
-//                           clawServo.setPosition(clawPositionOpen);
-//                           state = 3;
-//                           startTime = System.currentTimeMillis(); // Reset timer
-//                       }
-//                       break;
-//                   case 3:
-//                       state = 0;
-//                       intakeScoreState = false;
-//                       break;
-
-//            }
-
-
-           }
+//           }
 
 
 
+        }
+    }
+
+    public class Intake {
+        public class IntakeOut implements Action{
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                intakeComplete = false;
+
+
+                return false;
+            }
+
+        }
+        public Action intakeOut() {
+            return new IntakeOut();
         }
     }
 
@@ -318,7 +345,7 @@ public class rrAuto extends LinearOpMode {
         public class DepositUp implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                outmoto1.setTargetPosition(3300);
+                outmoto1.setTargetPosition(2300);
                 outmoto2.setPower(1);
                 outmoto1.setPower(1);
                 return false;
@@ -412,6 +439,68 @@ public class rrAuto extends LinearOpMode {
                 }
                 // All actions complete; stay idle or transition as needed
                 break;
+        }
+    }
+
+    public enum IntakeState {
+        INTAKE0,
+        INTAKE300,
+        INTAKEDOWN,
+        INTAKE750,
+        INTAKE350
+    }
+
+    private IntakeState intakeState = IntakeState.INTAKE0;
+    private long nowStartTime = 0;
+
+
+
+    public void intakeMovement() {
+
+        switch (intakeState){
+
+            case INTAKE0:
+                intakeTargetPosition = 300;
+                intakeState = IntakeState.INTAKE300;
+                intakeDrive.setPower(1);
+
+                break;
+
+            case INTAKE300:
+                if (intakeDrive.getCurrentPosition() > 250) {
+                    telemetry.addData("yippee", intakeState);
+                    telemetry.update();
+
+                    intakeServoLeft.setPosition(0.54);
+                    intakeServoRight.setPosition(0.45);
+                    intakeCRSLeft.setPower(-1);
+                    intakeCRSRight.setPower(1);
+                    lockServo.setPosition(0);
+                    intakeState = IntakeState.INTAKEDOWN;
+                    intakeDrive.setPower(0.2);
+                }
+                break;
+
+            case INTAKEDOWN:
+                intakeTargetPosition = 750;
+                intakeState = IntakeState.INTAKE750;
+                nowStartTime = System.currentTimeMillis();
+
+
+                break;
+
+            case INTAKE750:
+                if (intakeDrive.getCurrentPosition() > 740) {
+                    intakeTargetPosition = 0;
+                    intakeDrive.setPower(0.75);
+                    intakeServoLeft.setPosition(0.32);
+                    intakeServoRight.setPosition(0.695);
+                    intakeComplete = true;
+
+                }
+
+                break;
+
         }
     }
 

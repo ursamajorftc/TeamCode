@@ -90,7 +90,7 @@ public class mainTeleOp extends LinearOpMode {
     private DcMotor outmoto1 = null;
     private DcMotor outmoto2 = null;
     private static final int MIN_POSITION = 0;
-    private static final int MAX_POSITION = 950;
+    private static final int MAX_POSITION = 880;
     int intakeTargetPosition = 0;
 
     public double ServoPosition = 0.5;
@@ -210,7 +210,7 @@ public class mainTeleOp extends LinearOpMode {
                                         -gamepad2.left_stick_y*Math.abs(gamepad2.left_stick_y)*0.85,
                                         -gamepad2.left_stick_x*Math.abs(gamepad2.left_stick_x) *0.85
                                 ),
-                        (-gamepad2.right_stick_x* Math.abs(gamepad2.right_stick_x) * 0.65)
+                        (-gamepad2.right_stick_x* Math.abs(gamepad2.right_stick_x) * 0.75)
                         ));
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
             NormalizedRGBA colors1 = sampleDistance.getNormalizedColors();
