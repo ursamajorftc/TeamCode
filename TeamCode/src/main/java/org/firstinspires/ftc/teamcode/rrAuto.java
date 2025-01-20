@@ -105,7 +105,7 @@ public class rrAuto extends LinearOpMode {
 
     public double intakeServoPosition = 0;
 
-    public Pose2d corner(int angle) {
+    public Pose2d corner(double angle) {
         return new Pose2d(-58, -44, Math.toRadians(angle));
     }
 
@@ -148,7 +148,7 @@ public class rrAuto extends LinearOpMode {
         Intake intake = new Intake();
         clawServo.setPosition(clawPositionClosed);
         sleep(250);
-        armServo.setPosition(0.15);
+        armServo.setPosition(0.2);
         wristServo.setPosition(wristPositionStraight);
         intakeServoLeft.setPosition(0.32);
         intakeServoRight.setPosition(0.695);
@@ -175,12 +175,26 @@ public class rrAuto extends LinearOpMode {
                     .build();
             Action trajectorySample1 = drive.actionBuilder(corner(45))
 //                    .turn(Math.toRadians(22))
-                    .splineToLinearHeading(new Pose2d(-60, -38, Math.toRadians(78)), -pi / 8)
+                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(78)), -pi / 8)
                     .build();
-            Action trajectoryBucket1 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(69)))
+            Action trajectoryBucket1 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(78)))
                     .splineToLinearHeading(corner(45), -pi / 4)
                     .build();
-
+            Action trajectorySample2 = drive.actionBuilder(corner(45))
+//                    .turn(Math.toRadians(22))
+                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(102)), -pi / 8)
+                    .build();
+            Action trajectoryBucket2 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(89)))
+                    .splineToLinearHeading(corner(45), -pi / 4)
+                    .build();
+            Action trajectorySample3 = drive.actionBuilder(corner(45))
+//                    .turn(Math.toRadians(22))
+                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(120
+                    )), -pi / 8)
+                    .build();
+            Action trajectoryBucket3 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(89)))
+                    .splineToLinearHeading(corner(35), -pi / 4)
+                    .build();
 
             waitForStart();
 
@@ -194,13 +208,34 @@ public class rrAuto extends LinearOpMode {
                             trajectorySample1,
                             arm.bottomArmPos(),
                             intake.intakeOut(),
-//                            waitingTrajectory,
+//                            waitingTrajectory,a
                             new ParallelAction(arm.armTransferPos(),
                                     trajectoryBucket1),
                             depositLift.depositUp(),
                             arm.scoreArmPos(),
                             waitingTrajectory1,
+                            depositLift.depositDown(),
+                            trajectorySample2,
+                            arm.bottomArmPos(),
+                            intake.intakeOut(),
+//                            waitingTrajectory,
+                            new ParallelAction(arm.armTransferPos(),
+                                    trajectoryBucket2),
+                            depositLift.depositUp(),
+                            arm.scoreArmPos(),
+                            waitingTrajectory2,
+                            depositLift.depositDown(),
+                            trajectorySample3,
+                            arm.bottomArmPos(),
+                            intake.intakeOut(),
+//                            waitingTrajectory,
+                            new ParallelAction(arm.armTransferPos(),
+                                    trajectoryBucket3),
+                            depositLift.depositUp(),
+                            arm.scoreArmPos(),
+                            waitingTrajectory3,
                             depositLift.depositDown()
+
 
 
 //                            depositLift.depositUp(),
@@ -428,6 +463,7 @@ public class rrAuto extends LinearOpMode {
         public class ScoreArmPos implements Action {
             long scoreTime = 0;
             long scoreStartTime = System.currentTimeMillis();
+
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 wristServo.setPosition(wristPositionOut);
@@ -435,7 +471,7 @@ public class rrAuto extends LinearOpMode {
                 scoreTime = scoreStartTime;
 
 
-                return (System.currentTimeMillis()-scoreTime) <500 ;
+                return (System.currentTimeMillis() - scoreTime) < 500;
             }
 
 
@@ -458,7 +494,7 @@ public class rrAuto extends LinearOpMode {
                     outmoto2.setPower(0);
                 }
 
-                return (outmoto1.getCurrentPosition()<= 2300);
+                return (outmoto1.getCurrentPosition() <= 2300);
             }
         }
 
@@ -562,6 +598,13 @@ public class rrAuto extends LinearOpMode {
 
 
     public void intakeMovement() {
+        if ((intakeDrive.getCurrentPosition() > 145) && outmoto1.getCurrentPosition()<100) {
+            previousIntakeState = true;
+            if(outmoto1.getCurrentPosition() <15) {
+                armServo.setPosition(armPositionHover);
+                clawServo.setPosition(clawPositionOpen);
+            }
+        }
 
         switch (intakeState) {
 
