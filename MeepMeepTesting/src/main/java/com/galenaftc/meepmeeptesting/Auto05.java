@@ -21,8 +21,9 @@ public class Auto05 {
 				.build();
 
 		myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-33, -62, Math.toRadians(0)))
+								.setTangent(pi)
 				//spline to bucket
-				.splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(45)), -pi / 8)
+				.splineTo(new Vector2d(-55, -55), pi )
 				.waitSeconds(1)
 
 				//code to drop off sample (top bucket)
