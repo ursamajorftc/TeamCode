@@ -103,7 +103,6 @@ public class rrAuto extends LinearOpMode {
     final float[] hsvValues = new float[3];
 
 
-    public double intakeServoPosition = 0;
 
     public Pose2d corner(double angle) {
         return new Pose2d(-58, -44, Math.toRadians(angle));
@@ -189,7 +188,7 @@ public class rrAuto extends LinearOpMode {
                     .build();
             Action trajectorySample3 = drive.actionBuilder(corner(45))
 //                    .turn(Math.toRadians(22))
-                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(120
+                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(118
                     )), -pi / 8)
                     .build();
             Action trajectoryBucket3 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(89)))
@@ -217,7 +216,7 @@ public class rrAuto extends LinearOpMode {
                             depositLift.depositDown(),
                             trajectorySample2,
                             arm.bottomArmPos(),
-                            intake.intakeOut(),
+                            intake.intakeOut2(),
 //                            waitingTrajectory,
                             new ParallelAction(arm.armTransferPos(),
                                     trajectoryBucket2),
@@ -227,7 +226,7 @@ public class rrAuto extends LinearOpMode {
                             depositLift.depositDown(),
                             trajectorySample3,
                             arm.bottomArmPos(),
-                            intake.intakeOut(),
+                            intake.intakeOut1(),
 //                            waitingTrajectory,
                             new ParallelAction(arm.armTransferPos(),
                                     trajectoryBucket3),
@@ -371,6 +370,106 @@ public class rrAuto extends LinearOpMode {
     }
 
     public class Intake {
+        public class IntakeOut1 implements Action {
+            private boolean initialized = false;
+
+
+            private long nowStartTime = 0;
+            double intakeState = 0;
+
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    intakeComplete = false;
+                    initialized = true; // Ensure initialization happens only once
+                }
+
+                intakeMovement(687);
+
+//                    intakeTargetPosition = 300;
+//                    intakeDrive.setPower(1);
+//                    sleep(12500);
+////
+//                    intakeServoLeft.setPosition(0.54);
+//                    intakeServoRight.setPosition(0.45);
+//                    intakeCRSLeft.setPower(-1);
+//                    intakeCRSRight.setPower(1);
+//                    lockServo.setPosition(0);
+//                    intakeDrive.setPower(0.2);
+//                    intakeTargetPosition = 880;
+//                    sleep(740);
+//
+//                    intakeTargetPosition = 0;
+//                    intakeDrive.setPower(0.75);
+//                    intakeServoLeft.setPosition(0.32);
+//                    intakeServoRight.setPosition(0.695);
+
+
+//
+                // Execute one step of intake movement
+
+
+                // Check if the action is complete
+
+
+                // Return false to indicate the action is still ongoing
+
+                return !intakeComplete;
+            }
+        }
+
+        public class IntakeOut2 implements Action {
+            private boolean initialized = false;
+
+
+            private long nowStartTime = 0;
+            double intakeState = 0;
+
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                if (!initialized) {
+                    intakeComplete = false;
+                    initialized = true; // Ensure initialization happens only once
+                }
+
+                intakeMovement(790);
+
+//                    intakeTargetPosition = 300;
+//                    intakeDrive.setPower(1);
+//                    sleep(12500);
+////
+//                    intakeServoLeft.setPosition(0.54);
+//                    intakeServoRight.setPosition(0.45);
+//                    intakeCRSLeft.setPower(-1);
+//                    intakeCRSRight.setPower(1);
+//                    lockServo.setPosition(0);
+//                    intakeDrive.setPower(0.2);
+//                    intakeTargetPosition = 880;
+//                    sleep(740);
+//
+//                    intakeTargetPosition = 0;
+//                    intakeDrive.setPower(0.75);
+//                    intakeServoLeft.setPosition(0.32);
+//                    intakeServoRight.setPosition(0.695);
+
+
+//
+                // Execute one step of intake movement
+
+
+                // Check if the action is complete
+
+
+                // Return false to indicate the action is still ongoing
+
+                return !intakeComplete;
+            }
+        }
+
+
+
 
         public class IntakeOut implements Action {
             private boolean initialized = false;
@@ -387,7 +486,7 @@ public class rrAuto extends LinearOpMode {
                     initialized = true; // Ensure initialization happens only once
                 }
 
-                intakeMovement();
+                intakeMovement(830);
 
 //                    intakeTargetPosition = 300;
 //                    intakeDrive.setPower(1);
@@ -424,7 +523,20 @@ public class rrAuto extends LinearOpMode {
         public Action intakeOut() {
             return new IntakeOut();
         }
+
+        public Action intakeOut1() {
+            return new IntakeOut1();
+        }
+        public Action intakeOut2() {
+            return new IntakeOut2();
+        }
     }
+
+
+
+
+
+
 
     //  public class claw
 
@@ -597,7 +709,7 @@ public class rrAuto extends LinearOpMode {
     private long nowStartTime = 0;
 
 
-    public void intakeMovement() {
+    public void intakeMovement(int intakeTargetPosition) {
         if ((intakeDrive.getCurrentPosition() > 145) && outmoto1.getCurrentPosition()<100) {
             previousIntakeState = true;
             if(outmoto1.getCurrentPosition() <15) {
@@ -632,18 +744,20 @@ public class rrAuto extends LinearOpMode {
                 break;
 
             case INTAKEDOWN:
-                intakeDrive.setTargetPosition(880);
+                intakeDrive.setTargetPosition(intakeTargetPosition);
                 intakeState = IntakeState.INTAKE880;
                 nowStartTime = System.currentTimeMillis();
 
                 break;
 
             case INTAKE880:
-                if (intakeDrive.getCurrentPosition() > 740) {
+                if (intakeDrive.getCurrentPosition() > (intakeTargetPosition - 10)) {
                     intakeDrive.setTargetPosition(0);
                     intakeDrive.setPower(0.75);
                     intakeServoLeft.setPosition(0.32);
                     intakeServoRight.setPosition(0.695);
+                    intakeCRSLeft.setPower(-0.1);
+                    intakeCRSRight.setPower(0.1);
                     intakeState = IntakeState.INTAKE0;
                     intakeComplete = true;
 
