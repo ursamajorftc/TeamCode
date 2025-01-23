@@ -101,9 +101,9 @@ public class mainTeleOp extends LinearOpMode {
     public double wristPositionOut = 1;
 
     //arm positions
-    public double armPositionDeposit = 0.1;
-    public double armPositionHover = 0.54;
-    public double armPositionGrab = 0.675;
+    public double armPositionDeposit = 0.425;
+    public double armPositionHover = 0.856;
+    public double armPositionGrab = 1;
 
     //claw positions
     public double clawPositionOpen = 0.26;
@@ -176,7 +176,7 @@ public class mainTeleOp extends LinearOpMode {
 
 
 
-        armServo.setPosition(0.15);
+        armServo.setPosition(0.475);
         wristServo.setPosition(wristPositionDown);
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -193,7 +193,7 @@ public class mainTeleOp extends LinearOpMode {
         IntakeController intakeController = new IntakeController(gamepad1, intakeDrive);
         runtime.reset();
 
-        armServo.setPosition(0.15);
+        armServo.setPosition(0.475);
         wristServo.setPosition(wristPositionDown);
 
 
@@ -453,7 +453,7 @@ public class mainTeleOp extends LinearOpMode {
                 case 3:
                     if (elapsedTime >= 200) {
 
-                        armServo.setPosition(0.15);
+                        armServo.setPosition(0.475);
                         state = 4;
                         startTime = System.currentTimeMillis(); // Reset timer
                     }
@@ -501,7 +501,7 @@ public class mainTeleOp extends LinearOpMode {
 
             case CLOSE_CLAW:
                 if (currentTime - stateStartTime >= 200) { // Wait 200ms
-                    armServo.setPosition(0.15);
+                    armServo.setPosition(0.475);
                     stateStartTime = currentTime;
                     currentState = RobotState.MOVE_ARM;
                 }

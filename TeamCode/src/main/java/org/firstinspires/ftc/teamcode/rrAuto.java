@@ -70,9 +70,9 @@ public class rrAuto extends LinearOpMode {
     public double wristPositionOut = 1;
 
     //arm positions
-    public double armPositionDeposit = 0.1;
-    public double armPositionHover = 0.54;
-    public double armPositionGrab = 0.675;
+    public double armPositionDeposit = 0.425;
+    public double armPositionHover = 0.865;
+    public double armPositionGrab = 1;
 
     //claw positions
     public double clawPositionOpen = 0.26;
@@ -150,7 +150,7 @@ public class rrAuto extends LinearOpMode {
         Intake intake = new Intake();
         clawServo.setPosition(clawPositionClosed);
         sleep(250);
-        armServo.setPosition(0.2);
+        armServo.setPosition(0.525);
         wristServo.setPosition(wristPositionStraight);
         intakeServoLeft.setPosition(0.32);
         intakeServoRight.setPosition(0.695);
@@ -668,7 +668,7 @@ public class rrAuto extends LinearOpMode {
 
             case CLOSE_CLAW:
                 if (currentTime - stateStartTime >= 200) { // Wait 200ms
-                    armServo.setPosition(0.15);
+                    armServo.setPosition(0.475);
                     stateStartTime = currentTime;
                     currentState = mainTeleOp.RobotState.MOVE_ARM;
                 }
@@ -815,7 +815,7 @@ public class rrAuto extends LinearOpMode {
                 case 3:
                     if (elapsedTime >= 200) {
 
-                        armServo.setPosition(0.15);
+                        armServo.setPosition(0.475);
                         state = 4;
                         startTime = System.currentTimeMillis(); // Reset timer
                     }
