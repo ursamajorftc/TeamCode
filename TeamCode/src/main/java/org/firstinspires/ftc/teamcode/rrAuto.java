@@ -104,8 +104,11 @@ public class rrAuto extends LinearOpMode {
 
 
 
+    public Pose2d corner1(double angle) {
+        return new Pose2d(-59, -50, Math.toRadians(angle));
+    }
     public Pose2d corner(double angle) {
-        return new Pose2d(-58, -44, Math.toRadians(angle));
+        return new Pose2d(-63, -46, Math.toRadians(angle));
     }
 
     @Override
@@ -174,26 +177,29 @@ public class rrAuto extends LinearOpMode {
                     .build();
             Action trajectorySample1 = drive.actionBuilder(corner(45))
 //                    .turn(Math.toRadians(22))
-                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(78)), -pi / 8)
+                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(71)), -pi / 8)
                     .build();
-            Action trajectoryBucket1 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(78)))
+            Action trajectoryBucket1 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(71)))
                     .splineToLinearHeading(corner(45), -pi / 4)
                     .build();
             Action trajectorySample2 = drive.actionBuilder(corner(45))
 //                    .turn(Math.toRadians(22))
-                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(102)), -pi / 8)
+                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(92)), -pi / 8)
                     .build();
-            Action trajectoryBucket2 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(89)))
+            Action trajectoryBucket2 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(92)))
                     .splineToLinearHeading(corner(45), -pi / 4)
                     .build();
             Action trajectorySample3 = drive.actionBuilder(corner(45))
 //                    .turn(Math.toRadians(22))
-                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(118
-                    )), -pi / 8)
+                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(108)), -pi / 8)
                     .build();
-            Action trajectoryBucket3 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(89)))
-                    .splineToLinearHeading(corner(35), -pi / 4)
+            Action trajectoryBucket3 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(108)))
+                    .splineToLinearHeading(new Pose2d(-54, -55, Math.toRadians(35)), -pi / 4)
                     .build();
+//            Action waitingTrajectoryPark = drive.actionBuilder(new Pose2d(-54, -55, Math.toRadians(35))
+//
+//                    .build();
+          
 
             waitForStart();
 
@@ -234,6 +240,7 @@ public class rrAuto extends LinearOpMode {
                             arm.scoreArmPos(),
                             waitingTrajectory3,
                             depositLift.depositDown()
+//                            park
 
 
 
@@ -385,7 +392,7 @@ public class rrAuto extends LinearOpMode {
                     initialized = true; // Ensure initialization happens only once
                 }
 
-                intakeMovement(687);
+                intakeMovement(620);
 
 //                    intakeTargetPosition = 300;
 //                    intakeDrive.setPower(1);
@@ -434,7 +441,7 @@ public class rrAuto extends LinearOpMode {
                     initialized = true; // Ensure initialization happens only once
                 }
 
-                intakeMovement(790);
+                intakeMovement(720);
 
 //                    intakeTargetPosition = 300;
 //                    intakeDrive.setPower(1);
@@ -486,7 +493,7 @@ public class rrAuto extends LinearOpMode {
                     initialized = true; // Ensure initialization happens only once
                 }
 
-                intakeMovement(830);
+                intakeMovement(800);
 
 //                    intakeTargetPosition = 300;
 //                    intakeDrive.setPower(1);

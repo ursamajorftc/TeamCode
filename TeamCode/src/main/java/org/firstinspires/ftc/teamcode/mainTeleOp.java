@@ -207,10 +207,10 @@ public class mainTeleOp extends LinearOpMode {
             while (opModeIsActive()) {
                 drive.setDrivePowers(new PoseVelocity2d(
                                 new Vector2d(
-                                        -gamepad2.left_stick_y*Math.abs(gamepad2.left_stick_y)*0.85,
-                                        -gamepad2.left_stick_x*Math.abs(gamepad2.left_stick_x) *0.85
+                                        -gamepad2.left_stick_y*Math.abs(gamepad2.left_stick_y)*1,
+                                        -gamepad2.left_stick_x*Math.abs(gamepad2.left_stick_x) *1
                                 ),
-                        (-gamepad2.right_stick_x* Math.abs(gamepad2.right_stick_x) * 0.75)
+                        (-gamepad2.right_stick_x* Math.abs(gamepad2.right_stick_x) * 0.85)
                         ));
             NormalizedRGBA colors = colorSensor.getNormalizedColors();
             NormalizedRGBA colors1 = sampleDistance.getNormalizedColors();
