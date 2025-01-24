@@ -71,8 +71,8 @@ public class rrAuto extends LinearOpMode {
 
     //arm positions
     public double armPositionDeposit = 0.425;
-    public double armPositionHover = 0.865;
-    public double armPositionGrab = 1;
+    public double armPositionHover = 0.815;
+    public double armPositionGrab = .95;
 
     //claw positions
     public double clawPositionOpen = 0.26;
@@ -85,6 +85,7 @@ public class rrAuto extends LinearOpMode {
     private boolean previousIntakeState = false;
     private boolean intakeComplete = false;
     boolean sampleDistanceTriggered = false;
+    boolean intakeJerk = false;
 
     private Servo intakeServoRight = null;
     private boolean transferComplete = false;
@@ -102,11 +103,11 @@ public class rrAuto extends LinearOpMode {
 
     final float[] hsvValues = new float[3];
 
-
-
+    boolean climax = false;
     public Pose2d corner1(double angle) {
-        return new Pose2d(-59, -50, Math.toRadians(angle));
+        return new Pose2d(-61, -47, Math.toRadians(angle));
     }
+
     public Pose2d corner(double angle) {
         return new Pose2d(-63, -46, Math.toRadians(angle));
     }
@@ -160,10 +161,10 @@ public class rrAuto extends LinearOpMode {
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
             Action trajectoryBucket = drive.actionBuilder(beginPose)
                     .setTangent(pi)
-                    .splineToLinearHeading(corner(45), pi)
+                    .splineToLinearHeading(corner1(45), pi)
 
                     .build();
-            Action waitingTrajectory = drive.actionBuilder(corner(45))
+            Action waitingTrajectory = drive.actionBuilder(corner1(42))
                     .waitSeconds(0.5)
                     .build();
             Action waitingTrajectory1 = drive.actionBuilder(corner(45))
@@ -172,34 +173,34 @@ public class rrAuto extends LinearOpMode {
             Action waitingTrajectory2 = drive.actionBuilder(corner(45))
                     .waitSeconds(0.5)
                     .build();
-            Action waitingTrajectory3 = drive.actionBuilder(corner(45))
+            Action waitingTrajectory3 = drive.actionBuilder(new Pose2d(-65, -47, Math. toRadians(45)))
                     .waitSeconds(0.5)
                     .build();
-            Action trajectorySample1 = drive.actionBuilder(corner(45))
+            Action trajectorySample1 = drive.actionBuilder(corner1(45))
 //                    .turn(Math.toRadians(22))
-                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(71)), -pi / 8)
+                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(79)), -pi / 8)
                     .build();
-            Action trajectoryBucket1 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(71)))
+            Action trajectoryBucket1 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(79)))
                     .splineToLinearHeading(corner(45), -pi / 4)
                     .build();
             Action trajectorySample2 = drive.actionBuilder(corner(45))
 //                    .turn(Math.toRadians(22))
-                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(92)), -pi / 8)
+                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(95)), -pi / 8)
                     .build();
-            Action trajectoryBucket2 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(92)))
-                    .splineToLinearHeading(corner(45), -pi / 4)
+            Action trajectoryBucket2 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(95)))
+                    .splineToLinearHeading(new Pose2d(-65, -47, Math.toRadians(45)), -pi / 4)
                     .build();
-            Action trajectorySample3 = drive.actionBuilder(corner(45))
+            Action trajectorySample3 = drive.actionBuilder(new Pose2d(-65, -47, Math.toRadians(45)))
 //                    .turn(Math.toRadians(22))
-                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(108)), -pi / 8)
+                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(113)), -pi / 8)
                     .build();
-            Action trajectoryBucket3 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(108)))
+            Action trajectoryBucket3 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(113)))
                     .splineToLinearHeading(new Pose2d(-54, -55, Math.toRadians(35)), -pi / 4)
                     .build();
 //            Action waitingTrajectoryPark = drive.actionBuilder(new Pose2d(-54, -55, Math.toRadians(35))
 //
 //                    .build();
-          
+
 
             waitForStart();
 
@@ -243,12 +244,14 @@ public class rrAuto extends LinearOpMode {
 //                            park
 
 
-
 //                            depositLift.depositUp(),
 //                            depositLift.depositDown()
 
                     )
             );
+
+            intakeCRSLeft.setPower(0);
+            intakeCRSRight.setPower(0);
 
 //            Actions.runBlocking(
 //                    drive.actionBuilder(new Pose2d(-33, -62, Math.toRadians(0)))
@@ -392,7 +395,7 @@ public class rrAuto extends LinearOpMode {
                     initialized = true; // Ensure initialization happens only once
                 }
 
-                intakeMovement(620);
+                intakeMovement(590);
 
 //                    intakeTargetPosition = 300;
 //                    intakeDrive.setPower(1);
@@ -476,8 +479,6 @@ public class rrAuto extends LinearOpMode {
         }
 
 
-
-
         public class IntakeOut implements Action {
             private boolean initialized = false;
 
@@ -534,15 +535,11 @@ public class rrAuto extends LinearOpMode {
         public Action intakeOut1() {
             return new IntakeOut1();
         }
+
         public Action intakeOut2() {
             return new IntakeOut2();
         }
     }
-
-
-
-
-
 
 
     //  public class claw
@@ -691,7 +688,7 @@ public class rrAuto extends LinearOpMode {
                 break;
 
             case OPEN_CLAW:
-                if (currentTime - stateStartTime >= 200) { // Wait 200ms
+                if (currentTime - stateStartTime >= 100) { // Wait 200ms
                     outmoto1.setTargetPosition(0);
                     outmoto1.setPower(1);
                     outmoto2.setPower(0);
@@ -704,6 +701,7 @@ public class rrAuto extends LinearOpMode {
             case COMPLETE:
                 if (currentTime - stateStartTime > 200) {
                     currentState = mainTeleOp.RobotState.IDLE;
+                    intakeDrive.setTargetPosition(0);
                     downState = false;
                 }
                 // All actions complete; stay idle or transition as needed
@@ -717,9 +715,9 @@ public class rrAuto extends LinearOpMode {
 
 
     public void intakeMovement(int intakeTargetPosition) {
-        if ((intakeDrive.getCurrentPosition() > 145) && outmoto1.getCurrentPosition()<100) {
+        if ((intakeDrive.getCurrentPosition() > 145) && outmoto1.getCurrentPosition() < 100) {
             previousIntakeState = true;
-            if(outmoto1.getCurrentPosition() <15) {
+            if (outmoto1.getCurrentPosition() < 15) {
                 armServo.setPosition(armPositionHover);
                 clawServo.setPosition(clawPositionOpen);
             }
@@ -760,7 +758,7 @@ public class rrAuto extends LinearOpMode {
             case INTAKE880:
                 if (intakeDrive.getCurrentPosition() > (intakeTargetPosition - 10)) {
                     intakeDrive.setTargetPosition(0);
-                    intakeDrive.setPower(0.75);
+                    intakeDrive.setPower(1);
                     intakeServoLeft.setPosition(0.32);
                     intakeServoRight.setPosition(0.695);
                     intakeCRSLeft.setPower(-0.1);
@@ -779,11 +777,28 @@ public class rrAuto extends LinearOpMode {
     public void updateArmTransfer() {
         if (intakeDrive.getCurrentPosition() < 150) {
             lockServo.setPosition(0.3);
-            intakeCRSLeft.setPower(-1);
-            intakeCRSRight.setPower(1);
+            intakeCRSLeft.setPower(-0.5);
+            intakeCRSRight.setPower(0.5);
         }
 
-        if (!sampleDistanceTriggered && ((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM) < 17) {
+        if (!sampleDistanceTriggered && (((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM) > 20) && !intakeJerk && intakeDrive.getCurrentPosition() <= 0) {
+
+            intakeDrive.setTargetPosition(200);
+            intakeJerk = true;
+            climax = true;
+
+
+        }
+
+        if (intakeJerk && intakeDrive.getCurrentPosition()>90){
+            intakeDrive.setTargetPosition(-20);
+            intakeJerk = false;
+
+        }
+
+
+        if (!sampleDistanceTriggered && ((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM) < 20) {
+            intakeJerk = false;
             sampleDistanceTriggered = true;
             startTime = System.currentTimeMillis();
             state = 1;

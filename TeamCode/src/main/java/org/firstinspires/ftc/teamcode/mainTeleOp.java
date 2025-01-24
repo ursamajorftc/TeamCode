@@ -102,8 +102,8 @@ public class mainTeleOp extends LinearOpMode {
 
     //arm positions
     public double armPositionDeposit = 0.425;
-    public double armPositionHover = 0.856;
-    public double armPositionGrab = 1;
+    public double armPositionHover = 0.815;
+    public double armPositionGrab = 0.95;
 
     //claw positions
     public double clawPositionOpen = 0.26;
@@ -322,7 +322,7 @@ public class mainTeleOp extends LinearOpMode {
                 clawServo.setPosition(clawPositionOpen);
             }
 
-            if (gamepad1.y) {
+            if (gamepad2.y) {
                 intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
 
