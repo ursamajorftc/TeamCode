@@ -92,6 +92,7 @@ public class rrAuto extends LinearOpMode {
 
     public boolean intakeScoreState = false;
     public boolean downState = false;
+    long intakeStartTime = 0;
 
     int state = 0; // Persistent state variable
     long startTime = 0; // Persistent timer variable
@@ -105,11 +106,11 @@ public class rrAuto extends LinearOpMode {
 
     boolean climax = false;
     public Pose2d corner1(double angle) {
-        return new Pose2d(-61, -47, Math.toRadians(angle));
+        return new Pose2d(-61, -48, Math.toRadians(angle));
     }
 
     public Pose2d corner(double angle) {
-        return new Pose2d(-63, -46, Math.toRadians(angle));
+        return new Pose2d(-59, -49, Math.toRadians(angle));
     }
 
     @Override
@@ -159,6 +160,9 @@ public class rrAuto extends LinearOpMode {
         Pose2d beginPose = new Pose2d(-33, -62, Math.toRadians(0));
         if (TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class)) {
             MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
+            int sample1deg = 79;
+            int sample2deg = 98;
+            int sample3deg = 120;
             Action trajectoryBucket = drive.actionBuilder(beginPose)
                     .setTangent(pi)
                     .splineToLinearHeading(corner1(45), pi)
@@ -178,25 +182,28 @@ public class rrAuto extends LinearOpMode {
                     .build();
             Action trajectorySample1 = drive.actionBuilder(corner1(45))
 //                    .turn(Math.toRadians(22))
-                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(79)), -pi / 8)
+                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(sample1deg)), -pi / 8)
                     .build();
-            Action trajectoryBucket1 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(79)))
+            Action trajectoryBucket1 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(sample1deg)))
                     .splineToLinearHeading(corner(45), -pi / 4)
                     .build();
             Action trajectorySample2 = drive.actionBuilder(corner(45))
 //                    .turn(Math.toRadians(22))
-                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(95)), -pi / 8)
+                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(sample2deg)), -pi / 8)
                     .build();
-            Action trajectoryBucket2 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(95)))
-                    .splineToLinearHeading(new Pose2d(-65, -47, Math.toRadians(45)), -pi / 4)
+            Action trajectoryBucket2 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(sample2deg)))
+//                    .splineToLinearHeading(new Pose2d(-65, -47, Math.toRadians(45)), -pi / 4)
+                    .splineToLinearHeading(corner(45), -pi / 4)
                     .build();
             Action trajectorySample3 = drive.actionBuilder(new Pose2d(-65, -47, Math.toRadians(45)))
 //                    .turn(Math.toRadians(22))
-                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(113)), -pi / 8)
+                    .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(sample3deg)), -pi / 8)
                     .build();
-            Action trajectoryBucket3 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(113)))
-                    .splineToLinearHeading(new Pose2d(-54, -55, Math.toRadians(35)), -pi / 4)
+            Action trajectoryBucket3 = drive.actionBuilder(new Pose2d(-60, -36, Math.toRadians(sample3deg)))
+//                    .splineToLinearHeading(new Pose2d(-54, -55, Math.toRadians(35)), -pi / 4)
+                    .splineToLinearHeading(corner(45), -pi / 4)
                     .build();
+
 //            Action waitingTrajectoryPark = drive.actionBuilder(new Pose2d(-54, -55, Math.toRadians(35))
 //
 //                    .build();
@@ -395,7 +402,7 @@ public class rrAuto extends LinearOpMode {
                     initialized = true; // Ensure initialization happens only once
                 }
 
-                intakeMovement(590);
+                intakeMovement(620);
 
 //                    intakeTargetPosition = 300;
 //                    intakeDrive.setPower(1);
@@ -494,7 +501,8 @@ public class rrAuto extends LinearOpMode {
                     initialized = true; // Ensure initialization happens only once
                 }
 
-                intakeMovement(800);
+                intakeMovement(830);
+
 
 //                    intakeTargetPosition = 300;
 //                    intakeDrive.setPower(1);
@@ -766,6 +774,8 @@ public class rrAuto extends LinearOpMode {
                     intakeState = IntakeState.INTAKE0;
                     intakeComplete = true;
 
+                    intakeStartTime = System.currentTimeMillis();
+
                 }
 
                 break;
@@ -775,20 +785,23 @@ public class rrAuto extends LinearOpMode {
     }
 
     public void updateArmTransfer() {
-        if (intakeDrive.getCurrentPosition() < 150) {
+        if (intakeDrive.getCurrentPosition() < 50) {
             lockServo.setPosition(0.3);
-            intakeCRSLeft.setPower(-0.5);
-            intakeCRSRight.setPower(0.5);
+            intakeCRSLeft.setPower(-0.25);
+            intakeCRSRight.setPower(0.25);
         }
 
-        if (!sampleDistanceTriggered && (((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM) > 20) && !intakeJerk && intakeDrive.getCurrentPosition() <= 0) {
+        if ((!sampleDistanceTriggered && (((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM) > 20) && !intakeJerk && intakeDrive.getCurrentPosition() <= 0) ) {
 
             intakeDrive.setTargetPosition(200);
             intakeJerk = true;
             climax = true;
+//            ((System.currentTimeMillis()-intakeStartTime)>2000)
 
 
         }
+
+
 
         if (intakeJerk && intakeDrive.getCurrentPosition()>90){
             intakeDrive.setTargetPosition(-20);
@@ -797,7 +810,7 @@ public class rrAuto extends LinearOpMode {
         }
 
 
-        if (!sampleDistanceTriggered && ((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM) < 20) {
+        if ((!sampleDistanceTriggered && ((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM) < 20) ) {
             intakeJerk = false;
             sampleDistanceTriggered = true;
             startTime = System.currentTimeMillis();
@@ -845,6 +858,7 @@ public class rrAuto extends LinearOpMode {
                             state = 0;
                             sampleDistanceTriggered = false;
                             transferComplete = true;
+
                         }
 
 

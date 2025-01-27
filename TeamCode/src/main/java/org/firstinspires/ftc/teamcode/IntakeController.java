@@ -20,7 +20,7 @@ public class IntakeController {
             double joystickInput = -gamepad1.left_stick_y * Math.abs(gamepad1.left_stick_y) ;
             int intakePosition = intakeDrive.getCurrentPosition();
 
-            intakeTargetPosition = intakeTargetPosition + (int)(joystickInput * 70);
+            intakeTargetPosition = intakeTargetPosition + (int)(joystickInput * 80);
 
             if (intakeTargetPosition < MIN_POSITION) {
                 intakeTargetPosition = MIN_POSITION;
