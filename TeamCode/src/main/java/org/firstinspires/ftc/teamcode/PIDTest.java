@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-@TeleOp(name = "mainTeleOp", group = "Linear OpMode")
+@TeleOp(name = "PIDTest", group = "Linear OpMode")
 public class PIDTest extends LinearOpMode {
 	// motors declaration, we use the Ex version as it has velocity measurements
 	DcMotorEx outmoto1;
