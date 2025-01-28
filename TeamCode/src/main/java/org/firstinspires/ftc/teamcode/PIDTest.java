@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 @TeleOp(name = "PIDTest", group = "Linear OpMode")
 public class PIDTest extends LinearOpMode {
 	// motors declaration, we use the Ex version as it has velocity measurements
-	DcMotorEx outmoto1;
+	DcMotorEx outmoto1; 
 	DcMotorEx outmoto2;
 	PIDController pid = new PIDController(0.01, 0, 0.2);
 
@@ -42,10 +42,10 @@ public class PIDTest extends LinearOpMode {
 			outmoto1.setPower(power);
 			outmoto2.setPower(-power);
 
-			double processVariable = outmoto1.getCurrentPosition();
+			double currentPosition = outmoto1.getCurrentPosition();
 			telemetry.addData("Target Position", highBasket);
-			telemetry.addData("Current Position", processVariable);
-			telemetry.addData("Error", highBasket - processVariable);
+			telemetry.addData("Current Position", currentPosition);
+			telemetry.addData("Error", highBasket - currentPosition);
 			telemetry.addData("Integral", pid.getIntegral());
 			telemetry.update();
 		}
