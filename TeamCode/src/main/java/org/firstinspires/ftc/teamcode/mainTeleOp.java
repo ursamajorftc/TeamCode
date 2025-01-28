@@ -48,34 +48,13 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-
-
-
-
-
-/*
- * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
- * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
- * of the FTC Driver Station. When a selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
- *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all linear OpModes contain.
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
- */
 
 @TeleOp(name = "mainTeleOp", group = "Linear OpMode")
 
 public class mainTeleOp extends LinearOpMode {
-
 	// Declare OpMode members.
-
 	private FtcDashboard dashboard;
 	private ElapsedTime runtime = new ElapsedTime();
 	private CRServo intakeCRSLeft = null;
@@ -83,19 +62,13 @@ public class mainTeleOp extends LinearOpMode {
 	private Servo intakeServoLeft = null;
 	private Servo lockServo = null;
 	private DcMotor intakeDrive = null;
-
 	private Servo clawServo = null;
 	private Servo wristServo = null;
 	private Servo armServo = null;
-
-
 	private DcMotor outmoto1 = null;
 	private DcMotor outmoto2 = null;
 	private static final int MIN_POSITION = 0;
 	private static final int MAX_POSITION = 880;
-	int intakeTargetPosition = 0;
-
-	public double ServoPosition = 0.5;
 
 	//wrist positions
 	public double wristPositionDown = 0;
@@ -110,30 +83,20 @@ public class mainTeleOp extends LinearOpMode {
 	//claw positions
 	public double clawPositionOpen = 0.26;
 	public double clawPositionClosed = 0.48;
-
 	private boolean previousDpadDownState = false;
 	private boolean previousDpadUpState = false;
 	private boolean PreviousDpadLeftState = false;
 	private boolean previousAState = false;
-
 	private boolean previousIntakeState = false;
 	private Servo intakeServoRight = null;
-
 	boolean sampleDistanceTriggered = false;
-
 	int state = 0; // Persistent state variable
 	long startTime = 0; // Persistent timer variable
-
 	NormalizedColorSensor colorSensor;
 	NormalizedColorSensor sampleDistance;
-
 	View relativeLayout;
-
 	final float[] hsvValues = new float[3];
-
-
 	public double intakeServoPosition = 0;
-
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -144,9 +107,6 @@ public class mainTeleOp extends LinearOpMode {
 		int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
 		relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
 
-		// Initialize the hardware variables. Note that the strings used here as parameters
-		// to 'get' must correspond to the names assigned during the robot configuration
-		// step (using the FTC Robot Controller app on the phone).
 		intakeCRSLeft = hardwareMap.get(CRServo.class, "intakeCRSLeft");
 		intakeCRSRight = hardwareMap.get(CRServo.class, "intakeCRSRight");
 		intakeServoLeft = hardwareMap.get(Servo.class, "intakeServoLeft");
@@ -173,27 +133,19 @@ public class mainTeleOp extends LinearOpMode {
 		colorSensor = hardwareMap.get(NormalizedColorSensor.class, "intakeSensor");
 		sampleDistance = hardwareMap.get(NormalizedColorSensor.class, "sampleDistance");
 
-
 		armServo.setPosition(0.475);
 		wristServo.setPosition(wristPositionDown);
-
-		// To drive forward, most robots need the outmoto1 on one side to be reversed, because the axles point in opposite directions.
-		// Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
-		// Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
 
 		MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
 		// Wait for the game to start (driver presses START)
 		waitForStart();
-		//Thread intakeControlThread = new Thread(new intakeController());
-		//intakeControlThread.start();
 
 		IntakeController intakeController = new IntakeController(gamepad1, intakeDrive);
 		runtime.reset();
 
 		armServo.setPosition(0.475);
 		wristServo.setPosition(wristPositionDown);
-
 
 		// run until the end of the match (driver presses STOP)
 		while (opModeIsActive()) {
@@ -214,17 +166,10 @@ public class mainTeleOp extends LinearOpMode {
 				NormalizedRGBA colors1 = sampleDistance.getNormalizedColors();
 
 				intakeController.run();
-				/* Use telemetry to display feedback on the driver station. We show the red, green, and blue
-				 * normalized values from the sensor (in the range of 0 to 1), as well as the equivalent
-				 * HSV (hue, saturation and value) values. See http://web.archive.org/web/20190311170843/https://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
-				 * for an explanation of HSV color. */
 
 				// Update the hsvValues array by passing it to Color.colorToHSV()
 				Color.colorToHSV(colors.toColor(), hsvValues);
 				double color = hsvValues[0];
-
-				//intakeDrive.setPower(-gamepad1.left_stick_y * 0.5);
-				//new intakeController();
 
 				// Setup a variable for each drive wheel to save power level for telemetry
 				if (gamepad1.x) {
@@ -235,30 +180,19 @@ public class mainTeleOp extends LinearOpMode {
 					intakeCRSLeft.setPower(0);
 					intakeCRSRight.setPower(0);
 				}
-
-
 				if ((gamepad1.right_bumper) || (color > 15 && color < 60)) {
 					// intakeServoPosition += 0.02;
 					intakeServoLeft.setPosition(0.32);
 					intakeServoRight.setPosition(0.695);
 					intakeCRSLeft.setPower(-0.15);
 					intakeCRSRight.setPower(0.15);
-
-
-					//intake goes up
-
-
 				}
-
 				if (intakeDrive.getCurrentPosition() < 150 && previousIntakeState) {
 					lockServo.setPosition(0.3);
 					intakeCRSLeft.setPower(-0.5);
 					intakeCRSRight.setPower(0.5);
 					previousIntakeState = false;
-
 				}
-
-
 				if ((gamepad1.right_trigger > 0.25)) {
 					//intakeServoPosition -= 0.02;
 
@@ -267,37 +201,18 @@ public class mainTeleOp extends LinearOpMode {
 					lockServo.setPosition(0);
 					intakeCRSLeft.setPower(-1);
 					intakeCRSRight.setPower(1);
-
-
 				}
-
-
 				if (gamepad1.dpad_up && previousDpadUpState) {
 					outmoto1.setTargetPosition(2300);
 					outmoto1.setPower(1);
 					outmoto2.setPower(-outmoto1.getPower());
 				}
-
 				if (gamepad1.dpad_left && PreviousDpadLeftState) {
 					outmoto1.setTargetPosition(1160);
 					outmoto1.setPower(1);
 					outmoto2.setPower(-outmoto1.getPower());
 				}
 
-//            if (gamepad1.dpad_down && !previousDpadDownState){
-//                clawServo.setPosition(clawPositionClosed);
-//                sleep(200);
-//                armServo.setPosition(0.15);
-//                wristServo.setPosition(wristPositionDown);
-//                sleep(200);
-//                clawServo.setPosition(clawPositionOpen);
-//
-//                outmoto1.setTargetPosition(0);
-//                outmoto1.setPower(1);
-//                outmoto2.setPower(0);
-//                telemetry.addData("yippee", gamepad1.a);
-//
-//            }
 				updateArmTransfer();
 				updateArmRetracty();
 				peckArm();
@@ -306,7 +221,6 @@ public class mainTeleOp extends LinearOpMode {
 					outmoto2.setPower(0);
 
 				}
-
 
 				if (gamepad1.a) {
 					wristServo.setPosition(wristPositionOut);
@@ -331,32 +245,8 @@ public class mainTeleOp extends LinearOpMode {
 					}
 				}
 
-//            if (!sampleDistanceTriggered && (((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM) < 15)) {
-//                sampleDistanceTriggered = true;
-//                armServo.setPosition(armPositionGrab);
-//                clawServo.setPosition(clawPositionClosed);
-//                sleep(500);
-//                armServo.setPosition(0.15);
-//                sleep(750);
-//                wristServo.setPosition(wristPositionStraight);
-//            }
 				TelemetryPacket packet = new TelemetryPacket();
 
-				// Choose to drive using either Tank Mode, or POV Mode
-				// Comment out the method that's not used.  The default below is POV.
-
-				// POV Mode uses left stick to go forward, and right stick to turn.
-				// - This uses basic math to combine motions and is easier to drive straight.
-
-
-				// Tank Mode uses one stick to control each wheel.
-				// - This requires no math, but it is hard to drive forward slowly and keep straight.
-				// leftPower  = -gamepad1.left_stick_y ;
-				// rightPower = -gamepad1.right_stick_y ;
-
-				// Send calculated power to wheels
-
-				// Show the elapsed game time and wheel power.
 				packet.put("Status", "Run Time: " + runtime.toString());
 				packet.put("IntakeServoPosition", intakeServoPosition);
 				packet.put("IntakePosition", intakeDrive.getCurrentPosition());
@@ -378,40 +268,11 @@ public class mainTeleOp extends LinearOpMode {
 				telemetry.update();
 			}
 		}
-
-//    private class intakeController implements Runnable {
-//        @Override
-//        public void run() {
-//            while (opModeIsActive()) {
-//                double joystickInput = -gamepad1.left_stick_y;
-//                int intakePosition = intakeDrive.getCurrentPosition();
-//
-//                intakeTargetPosition = intakeTargetPosition + (int)(joystickInput * 40);
-//
-//                if (intakeTargetPosition < MIN_POSITION) {
-//                    intakeTargetPosition = MIN_POSITION;
-//                } else if (intakeTargetPosition > MAX_POSITION) {
-//                    intakeTargetPosition = MAX_POSITION;
-//
-//                }
-//
-//                adb a
-//
-//                try {
-//                    Thread.sleep(20);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    }
 	}
 
 // to make sure that the thread doesn't hinder other operations
-
 	int peckState = 0;
 	long peckTime = 0;
-
 	public void peckArm() {
 		if (gamepad2.right_bumper) {
 			peckState = 1;
@@ -431,10 +292,7 @@ public class mainTeleOp extends LinearOpMode {
 					wristServo.setPosition(wristPositionDown);
 					peckState = 0;
 				}
-
-
 		}
-
 	}
 
 	public void updateArmTransfer() {
@@ -557,5 +415,4 @@ public class mainTeleOp extends LinearOpMode {
 				break;
 		}
 	}
-
 }
