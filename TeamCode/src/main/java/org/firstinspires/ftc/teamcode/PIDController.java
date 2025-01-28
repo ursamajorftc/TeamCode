@@ -6,8 +6,6 @@ public class PIDController {
 	private double kI;
 	private double kD;
 
-	private double targetPoint;
-	private double lastError;
 	private double integral;
 	private double smoothedError = 0;
 	private double lastSmoothedError = 0;
@@ -20,8 +18,6 @@ public class PIDController {
 	}
 
 	public double update(double targetPoint, double processVariable) {
-		this.targetPoint = targetPoint;
-
 		double error = targetPoint - processVariable;
 		integral += error;
 		integral = Math.max(-MAX_INTEGRAL, Math.min(MAX_INTEGRAL, integral));

@@ -7,7 +7,7 @@ public class PIDTest extends LinearOpMode {
 	// motors declaration, we use the Ex version as it has velocity measurements
 	DcMotorEx outmoto1;
 	DcMotorEx outmoto2;
-	PIDController control = new PIDController(0,0,0);
+	PIDController control = new PIDController(0.01,0,0.2);
 	@Override
 	public void runOpMode() throws InterruptedException {
 		// the string is the hardware map name
@@ -29,18 +29,25 @@ public class PIDTest extends LinearOpMode {
 
 		// loop that runs while the program should run.
 		while (opModeIsActive()) {
-			double command = control.update(targetPosition, outmoto1.getCurrentPosition());
+			double upPower = control.update(targetPosition, outmoto1.getCurrentPosition());
+			double downPower = control.update(0, outmoto1.getCurrentPosition());
 
-			if ((gamepad1.right_trigger > 0.25)) {
-				outmoto1.setPower(command);
-				outmoto2.setPower(-command);
+			if ((gamepad1.dpad_up)) {
+				outmoto1.setPower(upPower);
+				outmoto2.setPower(-upPower);
+			} else if (gamepad1.dpad_down) {
+				outmoto2.setPower(0);
+				outmoto1.setPower(downPower);
 			}
+
+
+
 			double processVariable = outmoto1.getCurrentPosition();
 			telemetry.addData("Target Position", targetPosition);
 			telemetry.addData("Current Position", processVariable);
 			telemetry.addData("Error", targetPosition - processVariable);
 			telemetry.addData("Integral", control.getIntegral()); // Assuming 'integral' is public or you add a getter
-			telemetry.addData("Command (Output)", command);
+			telemetry.addData("Command (Output)", upPower);
 			telemetry.update();
 		}
 	}
