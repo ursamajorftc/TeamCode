@@ -33,7 +33,7 @@ public class PIDTest extends LinearOpMode {
 
 			if ((gamepad1.right_trigger > 0.25)) {
 				outmoto1.setPower(command);
-				outmoto2.setPower(-outmoto1.getPower());
+				outmoto2.setPower(-command);
 			}
 			double processVariable = outmoto1.getCurrentPosition();
 			telemetry.addData("Target Position", targetPosition);
