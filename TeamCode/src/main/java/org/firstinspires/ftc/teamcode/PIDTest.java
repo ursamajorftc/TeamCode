@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 @TeleOp(name = "PIDTest", group = "Linear OpMode")
 public class PIDTest extends LinearOpMode {
 	// motors declaration, we use the Ex version as it has velocity measurements
-	DcMotorEx outmoto1; 
+	DcMotorEx outmoto1;
 	DcMotorEx outmoto2;
 	PIDController pid = new PIDController(0.01, 0, 0.2);
 
