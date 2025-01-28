@@ -1,15 +1,10 @@
 package org.firstinspires.ftc.teamcode;
-
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-
 @TeleOp(name = "mainTeleOp", group = "Linear OpMode")
 public class PIDTest extends LinearOpMode {
-
-	// motors declaration, we use the
-	// Ex version as it has velocity measurements
+	// motors declaration, we use the Ex version as it has velocity measurements
 	DcMotorEx outmoto1;
 	DcMotorEx outmoto2;
 	PIDController control = new PIDController(0,0,0);
@@ -37,9 +32,16 @@ public class PIDTest extends LinearOpMode {
 			double command = control.update(targetPosition, outmoto1.getCurrentPosition());
 
 			if ((gamepad1.right_trigger > 0.25)) {
-				outmoto1.setPower(0.5);
+				outmoto1.setPower(command);
 				outmoto2.setPower(-outmoto1.getPower());
 			}
+			double processVariable = outmoto1.getCurrentPosition();
+			telemetry.addData("Target Position", targetPosition);
+			telemetry.addData("Current Position", processVariable);
+			telemetry.addData("Error", targetPosition - processVariable);
+			telemetry.addData("Integral", control.getIntegral()); // Assuming 'integral' is public or you add a getter
+			telemetry.addData("Command (Output)", command);
+			telemetry.update();
 		}
 	}
 }
