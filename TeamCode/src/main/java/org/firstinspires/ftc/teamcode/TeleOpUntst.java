@@ -102,9 +102,9 @@ public class TeleOpUntst extends LinearOpMode {
         intakeDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         intakeDrive.setPower(0.8); // Adjust power to prevent overheating
         while (opModeIsActive() && intakeDrive.isBusy()) {
-            // Wait until the motor reaches the target position
+            // Wait until the outmoto1 reaches the target position
         }
-        intakeDrive.setPower(0.0); // Stop the motor
+        intakeDrive.setPower(0.0); // Stop the outmoto1
         intakeDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     private void spinIntake(double power) {

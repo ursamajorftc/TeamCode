@@ -93,7 +93,7 @@ public class ProdTeleOP extends LinearOpMode {
 
         FtcDashboard dashboard = FtcDashboard.getInstance();
 
-        // Config motor
+        // Config outmoto1
         intakeDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtakeDrive1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -184,7 +184,7 @@ public class ProdTeleOP extends LinearOpMode {
             telemetry.update();
         }
 
-        intakeDrive.setPower(0.0); // Stop motor after reaching the target
+        intakeDrive.setPower(0.0); // Stop outmoto1 after reaching the target
     }
     public void moveVertSlidesToPos(int targetPosition, double maxPower) {
         clawServo.setPosition(FINGERCLOSE);

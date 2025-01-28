@@ -87,7 +87,7 @@ public class MultitaskingWithThreads extends LinearOpMode {
 
             while (isRunning) {
                 double armPower = gamepad2.left_stick_y;
-                // Set arm motor power
+                // Set arm outmoto1 power
                 armMotor.setPower(armPower);
 
                 try {
@@ -97,7 +97,7 @@ public class MultitaskingWithThreads extends LinearOpMode {
                 }
             }
 
-            // Stop arm motor when thread stops
+            // Stop arm outmoto1 when thread stops
             armMotor.setPower(0);
         }
     }

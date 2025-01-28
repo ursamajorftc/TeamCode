@@ -41,7 +41,7 @@ public class Auto extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
 
-        // Set motor directions (if necessary)
+        // Set outmoto1 directions (if necessary)
         intakeDrive.setDirection(DcMotor.Direction.FORWARD);
         intakeCRSLeft.setDirection(CRServo.Direction.FORWARD);
         intakeCRSRight.setDirection(CRServo.Direction.REVERSE);
@@ -103,11 +103,11 @@ public class Auto extends LinearOpMode {
         while (opModeIsActive()) {
             // Intake control using gamepad buttons (example)
             if (gamepad1.a) {
-                intakeDrive.setPower(INTAKE_SPIN_POWER); // Activate intake motor
+                intakeDrive.setPower(INTAKE_SPIN_POWER); // Activate intake outmoto1
             } else if (gamepad1.b) {
-                intakeDrive.setPower(-INTAKE_SPIN_POWER); // Reverse intake motor
+                intakeDrive.setPower(-INTAKE_SPIN_POWER); // Reverse intake outmoto1
             } else {
-                intakeDrive.setPower(0); // Stop intake motor
+                intakeDrive.setPower(0); // Stop intake outmoto1
             }
 
             // Control intake servo (e.g., open/close the intake mechanism)
