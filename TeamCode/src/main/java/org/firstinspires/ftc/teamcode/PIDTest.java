@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 @TeleOp(name = "PIDTest", group = "Linear OpMode")
@@ -29,11 +28,13 @@ public class PIDTest extends LinearOpMode {
 		outmoto2.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 		waitForStart();
 
-		int targetPosition = 2300;
+		int highBasket = 2300;
+		int lowBasket = 1160;
 
 		// loop that runs while the program should run.
 		while (opModeIsActive()) {
-			if (gamepad1.dpad_up) pid.setTargetPosition(targetPosition);
+			if (gamepad1.dpad_up) pid.setTargetPosition(highBasket);
+			if (gamepad1.dpad_left) pid.setTargetPosition(lowBasket);
 			if (gamepad1.dpad_down) pid.setTargetPosition(0);
 
 			double power = pid.update(outmoto1.getCurrentPosition());
@@ -42,9 +43,9 @@ public class PIDTest extends LinearOpMode {
 			outmoto2.setPower(-power);
 
 			double processVariable = outmoto1.getCurrentPosition();
-			telemetry.addData("Target Position", targetPosition);
+			telemetry.addData("Target Position", highBasket);
 			telemetry.addData("Current Position", processVariable);
-			telemetry.addData("Error", targetPosition - processVariable);
+			telemetry.addData("Error", highBasket - processVariable);
 			telemetry.addData("Integral", pid.getIntegral());
 			telemetry.update();
 		}
