@@ -17,8 +17,8 @@ public class PIDController {
 		this.kD = kD;
 	}
 
-	public double update(double targetPoint, double processVariable) {
-		double error = targetPoint - processVariable;
+	public double update(double targetPoint, double currentPosition) {
+		double error = targetPoint - currentPosition;
 		integral += error;
 		integral = Math.max(-MAX_INTEGRAL, Math.min(MAX_INTEGRAL, integral));
 
