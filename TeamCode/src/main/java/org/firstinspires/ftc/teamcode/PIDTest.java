@@ -1,13 +1,17 @@
 package org.firstinspires.ftc.teamcode;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+
 @TeleOp(name = "PIDTest", group = "Linear OpMode")
 public class PIDTest extends LinearOpMode {
 	// motors declaration, we use the Ex version as it has velocity measurements
 	DcMotorEx outmoto1;
 	DcMotorEx outmoto2;
-	PIDController control = new PIDController(0.01,0,0.2);
+	PIDController pid = new PIDController(0.01, 0, 0.2);
+
 	@Override
 	public void runOpMode() throws InterruptedException {
 		// the string is the hardware map name
@@ -29,25 +33,19 @@ public class PIDTest extends LinearOpMode {
 
 		// loop that runs while the program should run.
 		while (opModeIsActive()) {
-			double upPower = control.update(targetPosition, outmoto1.getCurrentPosition());
-			double downPower = control.update(0, outmoto1.getCurrentPosition());
+			if (gamepad1.dpad_up) pid.setTargetPosition(targetPosition);
+			if (gamepad1.dpad_down) pid.setTargetPosition(0);
 
-			if ((gamepad1.dpad_up)) {
-				outmoto1.setPower(upPower);
-				outmoto2.setPower(-upPower);
-			} else if (gamepad1.dpad_down) {
-				outmoto2.setPower(0);
-				outmoto1.setPower(downPower);
-			}
+			double power = pid.update(outmoto1.getCurrentPosition());
 
-
+			outmoto1.setPower(power);
+			outmoto2.setPower(-power);
 
 			double processVariable = outmoto1.getCurrentPosition();
 			telemetry.addData("Target Position", targetPosition);
 			telemetry.addData("Current Position", processVariable);
 			telemetry.addData("Error", targetPosition - processVariable);
-			telemetry.addData("Integral", control.getIntegral()); // Assuming 'integral' is public or you add a getter
-			telemetry.addData("Command (Output)", upPower);
+			telemetry.addData("Integral", pid.getIntegral());
 			telemetry.update();
 		}
 	}

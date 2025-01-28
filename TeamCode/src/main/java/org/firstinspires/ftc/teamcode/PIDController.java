@@ -7,6 +7,7 @@ public class PIDController {
 	private double kD;
 
 	private double integral;
+	private double targetPosition = 0;
 	private double smoothedError = 0;
 	private double lastSmoothedError = 0;
 	private final double MAX_INTEGRAL = 100;
@@ -17,8 +18,13 @@ public class PIDController {
 		this.kD = kD;
 	}
 
-	public double update(double targetPoint, double currentPosition) {
-		double error = targetPoint - currentPosition;
+	public void setTargetPosition(double TargetPosition) {
+		this.targetPosition = TargetPosition;
+	}
+
+	public double update(double currentPosition) {
+		double error = this.targetPosition - currentPosition;
+
 		integral += error;
 		integral = Math.max(-MAX_INTEGRAL, Math.min(MAX_INTEGRAL, integral));
 
@@ -31,6 +37,9 @@ public class PIDController {
 
 		return Math.max(-1, Math.min(1, rawValue));
 	}
-	public double getIntegral () {return this.integral;}
+
+	public double getIntegral() {
+		return this.integral;
+	}
 }
 

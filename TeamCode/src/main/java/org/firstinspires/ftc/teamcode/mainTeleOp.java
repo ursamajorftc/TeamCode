@@ -48,7 +48,9 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 @TeleOp(name = "mainTeleOp", group = "Linear OpMode")
@@ -270,9 +272,10 @@ public class mainTeleOp extends LinearOpMode {
 		}
 	}
 
-// to make sure that the thread doesn't hinder other operations
+	// to make sure that the thread doesn't hinder other operations
 	int peckState = 0;
 	long peckTime = 0;
+
 	public void peckArm() {
 		if (gamepad2.right_bumper) {
 			peckState = 1;
