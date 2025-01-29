@@ -336,7 +336,7 @@ public class rrAuto extends LinearOpMode {
 //            if (intakeScoreState) {
 //                state = 1;
 //                telemetry.addData("hello", intakeScoreState);
-//                telemetry.update();
+//                telemetry.getPower();
 //                wristServo.setPosition(wristPositionOut);
 //                sleep(250);
 //                clawServo.setPosition(clawPositionOpen);
@@ -352,7 +352,7 @@ public class rrAuto extends LinearOpMode {
 ////                       wristServo.setPosition(wristPositionOut);
 ////                       state = 2;
 ////                       telemetry.addData("state", state);
-////                       telemetry.update();
+////                       telemetry.getPower();
 ////                       startTime = System.currentTimeMillis(); // Reset timer
 ////                       break;
 ////

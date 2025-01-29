@@ -121,7 +121,7 @@ public class SensorColorTest extends LinearOpMode {
     // (but always greater than  or equal to 1).
     float gain = 2;
 
-    // Once per loop, we will update this hsvValues array. The first element (0) will contain the
+    // Once per loop, we will getPower this hsvValues array. The first element (0) will contain the
     // hue, the second element (1) will contain the saturation, and the third element (2) will
     // contain the value. See http://web.archive.org/web/20190311170843/https://infohost.nmt.edu/tcc/help/pubs/colortheory/web/hsv.html
     // for an explanation of HSV color.

@@ -43,7 +43,7 @@ public class PIDTest extends LinearOpMode {
 				pid.setTargetPosition(0);
 			}
 
-			double power = pid.update(outmoto1.getCurrentPosition());
+			double power = pid.getPower(outmoto1.getCurrentPosition());
 
 
 			if (outmoto1.getCurrentPosition()> pid.getTargetPosition()) {

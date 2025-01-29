@@ -33,7 +33,6 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -212,13 +211,13 @@ public class mainTeleOp extends LinearOpMode {
 				}
 				if (gamepad1.dpad_up && previousDpadUpState) {
 					pid.setTargetPosition(highBasket);
-					outmoto1.setPower(pid.update(outmoto1.getCurrentPosition()));
-					outmoto2.setPower(-pid.update(outmoto1.getCurrentPosition()));
+					outmoto1.setPower(pid.getPower(outmoto1.getCurrentPosition()));
+					outmoto2.setPower(-pid.getPower(outmoto1.getCurrentPosition()));
 				}
 				if (gamepad1.dpad_left && PreviousDpadLeftState) {
 					pid.setTargetPosition(lowBasket);
-					outmoto1.setPower(pid.update(outmoto1.getCurrentPosition()));
-					outmoto2.setPower(-pid.update(outmoto1.getCurrentPosition()));
+					outmoto1.setPower(pid.getPower(outmoto1.getCurrentPosition()));
+					outmoto2.setPower(-pid.getPower(outmoto1.getCurrentPosition()));
 				}
 
 				updateArmTransfer();
@@ -405,8 +404,10 @@ public class mainTeleOp extends LinearOpMode {
 			case OPEN_CLAW:
 				if (currentTime - stateStartTime >= 200) { // Wait 200ms
 					pid.setTargetPosition(downPosition);
-					outmoto1.setPower(-0.2);
-					outmoto2.setPower(0.2);
+					if (outmoto1.getCurrentPosition()>=5) {
+						outmoto1.setPower(-0.2);
+						outmoto2.setPower(0.2);
+					}
 					telemetry.addData("yippee", gamepad1.a);
 					stateStartTime = currentTime;
 					currentState = RobotState.COMPLETE;

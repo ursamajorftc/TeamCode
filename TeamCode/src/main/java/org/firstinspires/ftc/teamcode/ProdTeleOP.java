@@ -149,7 +149,7 @@ public class ProdTeleOP extends LinearOpMode {
 
             // Print the distance value (for debugging)
 //            telemetry.addData("Distance", distanceInMM);
-//            telemetry.update();
+//            telemetry.getPower();
 
 //            // Check if the distance is less than or equal to 12mm
 //            if (distanceInMM <= DISTANCE_THRESHOLD_MM) {
