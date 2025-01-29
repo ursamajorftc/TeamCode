@@ -102,7 +102,7 @@ public class mainTeleOp extends LinearOpMode {
 	int highBasket = 1100;
 	int lowBasket = 530;
 	int downPosition = 0;
-	PIDController pid = new PIDController(0.04, 0, 0.005);
+	PIDController pid = new PIDController(0.04, 0, 0.05);
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -380,7 +380,7 @@ public class mainTeleOp extends LinearOpMode {
 			case CLOSE_CLAW:
 				if (currentTime - stateStartTime >= 200) { // Wait 200ms
 					armServo.setPosition(0.475);
-					stateStartTime = currentTime;
+
 					currentState = RobotState.MOVE_ARM;
 				}
 				break;
