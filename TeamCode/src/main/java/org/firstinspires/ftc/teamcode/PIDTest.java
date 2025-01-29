@@ -10,7 +10,6 @@ public class PIDTest extends LinearOpMode {
 	DcMotorEx outmoto1;
 	DcMotorEx outmoto2;
 	PIDController pid = new PIDController(0.04, 0, 0.005);
-	private boolean killMotors = false;
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -30,34 +29,33 @@ public class PIDTest extends LinearOpMode {
 
 		waitForStart();
 
-		int highBasket = 960;
-		int lowBasket = 485;
+		int highBasket = 1100;
+		int lowBasket = 530;
+		int downPosition = 0;
 
 		// loop that runs while the program should run.
 		while (opModeIsActive()) {
 			if (gamepad1.dpad_up) {
 				pid.setTargetPosition(highBasket);
-				killMotors = false;
 			} else if (gamepad1.dpad_left) {
 				pid.setTargetPosition(lowBasket);
-				killMotors = false;
 			} else if (gamepad1.dpad_down) {
 				pid.setTargetPosition(0);
-				killMotors = true;
 			}
 
 			double power = pid.update(outmoto1.getCurrentPosition());
 
-			if (!killMotors) {
+
+			if (outmoto1.getCurrentPosition()> pid.getTargetPosition()) {
+				outmoto1.setPower(-0.2);
+				outmoto2.setPower(0.2);
+			} else {
 				outmoto1.setPower(power);
 				outmoto2.setPower(-power);
-			} else {
-				outmoto1.setPower(0);
-				outmoto2.setPower(0);
 			}
 
 			double currentPosition = outmoto1.getCurrentPosition();
-			telemetry.addData("Target Position", highBasket);
+			telemetry.addData("Target Position", pid.getTargetPosition());
 			telemetry.addData("Current Position", currentPosition);
 			telemetry.addData("Error", highBasket - currentPosition);
 			telemetry.addData("Integral", pid.getIntegral());

@@ -41,5 +41,6 @@ public class PIDController {
 	public double getIntegral() {
 		return this.integral;
 	}
+	public double getTargetPosition() {return this.targetPosition;}
 }
 

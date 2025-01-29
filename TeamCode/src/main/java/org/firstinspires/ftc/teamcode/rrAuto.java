@@ -52,8 +52,8 @@ public class rrAuto extends LinearOpMode {
     private Servo armServo = null;
 
 
-    private DcMotor outmoto1 = null;
-    private DcMotor outmoto2 = null;
+    private DcMotorEx outmoto1 = null;
+    private DcMotorEx outmoto2 = null;
     private static final int MIN_POSITION = 0;
     private static final int INTAKE_POSITION1 = 950;
     private static final int INTAKE_POSITION2 = 950;
@@ -129,8 +129,8 @@ public class rrAuto extends LinearOpMode {
         wristServo = hardwareMap.get(Servo.class, "wristServo");
         armServo = hardwareMap.get(Servo.class, "armServo");
 
-        outmoto1 = hardwareMap.get(DcMotor.class, "outmoto1");
-        outmoto2 = hardwareMap.get(DcMotor.class, "outmoto2");
+        outmoto1 = hardwareMap.get(DcMotorEx.class, "outmoto1");
+        outmoto2 = hardwareMap.get(DcMotorEx.class, "outmoto2");
 
         outmoto1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outmoto1.setTargetPosition(0);
@@ -145,6 +145,8 @@ public class rrAuto extends LinearOpMode {
         VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "intakeSensor");
         sampleDistance = hardwareMap.get(NormalizedColorSensor.class, "sampleDistance");
+
+        PIDController pid = new PIDController(0.04, 0, 0.005);
 
         double pi = Math.PI;
         Arm arm = new Arm();
@@ -166,7 +168,6 @@ public class rrAuto extends LinearOpMode {
             Action trajectoryBucket = drive.actionBuilder(beginPose)
                     .setTangent(pi)
                     .splineToLinearHeading(corner1(45), pi)
-
                     .build();
             Action waitingTrajectory = drive.actionBuilder(corner1(42))
                     .waitSeconds(0.5)

@@ -41,6 +41,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -99,6 +100,10 @@ public class mainTeleOp extends LinearOpMode {
 	View relativeLayout;
 	final float[] hsvValues = new float[3];
 	public double intakeServoPosition = 0;
+	int highBasket = 1100;
+	int lowBasket = 530;
+	int downPosition = 0;
+	PIDController pid = new PIDController(0.04, 0, 0.005);
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -123,14 +128,15 @@ public class mainTeleOp extends LinearOpMode {
 		wristServo = hardwareMap.get(Servo.class, "wristServo");
 		armServo = hardwareMap.get(Servo.class, "armServo");
 
-		outmoto1 = hardwareMap.get(DcMotor.class, "outmoto1");
-		outmoto2 = hardwareMap.get(DcMotor.class, "outmoto2");
+		outmoto1 = hardwareMap.get(DcMotorEx.class, "outmoto1");
+		outmoto2 = hardwareMap.get(DcMotorEx.class, "outmoto2");
 
-		outmoto1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		outmoto1.setTargetPosition(0);
-		outmoto1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+		outmoto1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+		outmoto2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
-		outmoto1.setPower(0.1);
+		outmoto1.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+		outmoto2.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
 		VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
 		colorSensor = hardwareMap.get(NormalizedColorSensor.class, "intakeSensor");
 		sampleDistance = hardwareMap.get(NormalizedColorSensor.class, "sampleDistance");
@@ -205,24 +211,20 @@ public class mainTeleOp extends LinearOpMode {
 					intakeCRSRight.setPower(1);
 				}
 				if (gamepad1.dpad_up && previousDpadUpState) {
-					outmoto1.setTargetPosition(2300);
-					outmoto1.setPower(1);
-					outmoto2.setPower(-outmoto1.getPower());
+					pid.setTargetPosition(highBasket);
+					outmoto1.setPower(pid.update(outmoto1.getCurrentPosition()));
+					outmoto2.setPower(-pid.update(outmoto1.getCurrentPosition()));
 				}
 				if (gamepad1.dpad_left && PreviousDpadLeftState) {
-					outmoto1.setTargetPosition(1160);
-					outmoto1.setPower(1);
-					outmoto2.setPower(-outmoto1.getPower());
+					pid.setTargetPosition(lowBasket);
+					outmoto1.setPower(pid.update(outmoto1.getCurrentPosition()));
+					outmoto2.setPower(-pid.update(outmoto1.getCurrentPosition()));
 				}
 
 				updateArmTransfer();
 				updateArmRetracty();
 				peckArm();
 
-				if (!outmoto1.isBusy()) {
-					outmoto2.setPower(0);
-
-				}
 
 				if (gamepad1.a) {
 					wristServo.setPosition(wristPositionOut);
@@ -267,6 +269,7 @@ public class mainTeleOp extends LinearOpMode {
 				telemetry.addData("hsv Value:", color);
 				telemetry.addData("Distance", ((DistanceSensor) sampleDistance).getDistance(DistanceUnit.MM));
 				telemetry.addData("Deposit Slides", outmoto1.getCurrentPosition());
+				telemetry.addData("Deposit Target Position", pid.getTargetPosition());
 				telemetry.update();
 			}
 		}
@@ -401,9 +404,9 @@ public class mainTeleOp extends LinearOpMode {
 
 			case OPEN_CLAW:
 				if (currentTime - stateStartTime >= 200) { // Wait 200ms
-					outmoto1.setTargetPosition(0);
-					outmoto1.setPower(1);
-					outmoto2.setPower(0);
+					pid.setTargetPosition(downPosition);
+					outmoto1.setPower(-0.2);
+					outmoto2.setPower(0.2);
 					telemetry.addData("yippee", gamepad1.a);
 					stateStartTime = currentTime;
 					currentState = RobotState.COMPLETE;
