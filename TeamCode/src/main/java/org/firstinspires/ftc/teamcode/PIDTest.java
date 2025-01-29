@@ -9,7 +9,8 @@ public class PIDTest extends LinearOpMode {
 	// motors declaration, we use the Ex version as it has velocity measurements
 	DcMotorEx outmoto1;
 	DcMotorEx outmoto2;
-	PIDController pid = new PIDController(0.01, 0, 0.2);
+	PIDController pid = new PIDController(0.04, 0, 0.005);
+	private boolean killMotors = false;
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -26,21 +27,34 @@ public class PIDTest extends LinearOpMode {
 		// but lets us simply send raw motors power.
 		outmoto1.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 		outmoto2.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
 		waitForStart();
 
-		int highBasket = 2300;
-		int lowBasket = 1160;
+		int highBasket = 960;
+		int lowBasket = 485;
 
 		// loop that runs while the program should run.
 		while (opModeIsActive()) {
-			if (gamepad1.dpad_up) pid.setTargetPosition(highBasket);
-			if (gamepad1.dpad_left) pid.setTargetPosition(lowBasket);
-			if (gamepad1.dpad_down) pid.setTargetPosition(0);
+			if (gamepad1.dpad_up) {
+				pid.setTargetPosition(highBasket);
+				killMotors = false;
+			} else if (gamepad1.dpad_left) {
+				pid.setTargetPosition(lowBasket);
+				killMotors = false;
+			} else if (gamepad1.dpad_down) {
+				pid.setTargetPosition(0);
+				killMotors = true;
+			}
 
 			double power = pid.update(outmoto1.getCurrentPosition());
 
-			outmoto1.setPower(power);
-			outmoto2.setPower(-power);
+			if (!killMotors) {
+				outmoto1.setPower(power);
+				outmoto2.setPower(-power);
+			} else {
+				outmoto1.setPower(0);
+				outmoto2.setPower(0);
+			}
 
 			double currentPosition = outmoto1.getCurrentPosition();
 			telemetry.addData("Target Position", highBasket);
