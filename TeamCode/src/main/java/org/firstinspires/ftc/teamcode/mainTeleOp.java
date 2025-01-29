@@ -201,8 +201,6 @@ public class mainTeleOp extends LinearOpMode {
 					previousIntakeState = false;
 				}
 				if ((gamepad1.right_trigger > 0.25)) {
-					//intakeServoPosition -= 0.02;
-
 					intakeServoLeft.setPosition(0.54);
 					intakeServoRight.setPosition(0.45);
 					lockServo.setPosition(0);
@@ -211,13 +209,9 @@ public class mainTeleOp extends LinearOpMode {
 				}
 				if (gamepad1.dpad_up && previousDpadUpState) {
 					pid.setTargetPosition(highBasket);
-					outmoto1.setPower(pid.getPower(outmoto1.getCurrentPosition()));
-					outmoto2.setPower(-pid.getPower(outmoto1.getCurrentPosition()));
 				}
 				if (gamepad1.dpad_left && PreviousDpadLeftState) {
 					pid.setTargetPosition(lowBasket);
-					outmoto1.setPower(pid.getPower(outmoto1.getCurrentPosition()));
-					outmoto2.setPower(-pid.getPower(outmoto1.getCurrentPosition()));
 				}
 
 				updateArmTransfer();
@@ -246,6 +240,15 @@ public class mainTeleOp extends LinearOpMode {
 						armServo.setPosition(armPositionHover);
 						clawServo.setPosition(clawPositionOpen);
 					}
+				}
+
+				double power = pid.getPower(outmoto1.getCurrentPosition());
+				if (outmoto1.getCurrentPosition()> pid.getTargetPosition()) {
+					outmoto1.setPower(-0.2);
+					outmoto2.setPower(0.2);
+				} else {
+					outmoto1.setPower(power);
+					outmoto2.setPower(-power);
 				}
 
 				TelemetryPacket packet = new TelemetryPacket();
@@ -404,7 +407,7 @@ public class mainTeleOp extends LinearOpMode {
 			case OPEN_CLAW:
 				if (currentTime - stateStartTime >= 200) { // Wait 200ms
 					pid.setTargetPosition(downPosition);
-					if (outmoto1.getCurrentPosition()>=5) {
+					if (outmoto1.getCurrentPosition()>=20) {
 						outmoto1.setPower(-0.2);
 						outmoto2.setPower(0.2);
 					}

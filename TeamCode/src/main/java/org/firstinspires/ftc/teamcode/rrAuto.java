@@ -261,60 +261,7 @@ public class rrAuto extends LinearOpMode {
             intakeCRSLeft.setPower(0);
             intakeCRSRight.setPower(0);
 
-//            Actions.runBlocking(
-//                    drive.actionBuilder(new Pose2d(-33, -62, Math.toRadians(0)))
-//                            .splineToLinearHeading(corner(45), -pi/4)
-//
-//                            .waitSeconds(1)
 
-            //code to drop off sample (top bucket)
-
-
-//                        //face first sample
-//                        .splineToLinearHeading(corner(76.79), -pi/8)
-//                        .waitSeconds(1)
-//
-//                        //grab
-//
-//
-//                        //rotate to bucket
-//                        .splineToLinearHeading(new Pose2d(corner(45)), -pi/8)
-//                        .waitSeconds(1)
-//
-//                        //drop sample
-//
-//
-//                        //face second sample
-//                        .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(93.98)), -pi/8)
-//                        .waitSeconds(1)
-//
-//                        //grab
-//
-//
-//                        //rotate to bucket
-//                        .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(45)), -pi/8)
-//                        .waitSeconds(1)
-//
-//                        //drop sample
-//
-//
-//                        //face third sample
-//                        .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(111.345)), -pi/8)
-//                        .waitSeconds(1)
-//
-//                        //grab
-//
-//
-//                        //face bucket
-//                        .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(45)), -pi/8)
-//
-//                        //drop sample
-//
-//
-//                        //park
-//                        .splineToLinearHeading(new Pose2d(-55, -55, Math.toRadians(100)), -pi/8)
-//                        .splineTo(new Vector2d(-25, -11.5), 0)
-            //  .build());
         } else {
             throw new RuntimeException();
         }
@@ -331,48 +278,6 @@ public class rrAuto extends LinearOpMode {
             if (!outmoto1.isBusy()) {
                 outmoto2.setPower(0);
             }
-
-
-//            if (intakeScoreState) {
-//                state = 1;
-//                telemetry.addData("hello", intakeScoreState);
-//                telemetry.getPower();
-//                wristServo.setPosition(wristPositionOut);
-//                sleep(250);
-//                clawServo.setPosition(clawPositionOpen);
-//                sleep(800);
-//                clawServo.setPosition(clawPositionClosed);
-//                intakeScoreState = false;
-//
-////               long elapsedTime = System.currentTimeMillis() - startTime;
-////
-////               switch (state) {
-////                   case 1:
-////
-////                       wristServo.setPosition(wristPositionOut);
-////                       state = 2;
-////                       telemetry.addData("state", state);
-////                       telemetry.getPower();
-////                       startTime = System.currentTimeMillis(); // Reset timer
-////                       break;
-////
-////                   case 2:
-////                       if (elapsedTime >= 150) {
-////
-////                           clawServo.setPosition(clawPositionOpen);
-////                           state = 3;
-////                           startTime = System.currentTimeMillis(); // Reset timer
-////                       }
-////                       break;
-////                   case 3:
-////                       state = 0;
-////                       intakeScoreState = false;
-////                       break;
-//
-////            }
-//
-//
-//           }
 
 
         }
@@ -405,33 +310,6 @@ public class rrAuto extends LinearOpMode {
 
                 intakeMovement(620);
 
-//                    intakeTargetPosition = 300;
-//                    intakeDrive.setPower(1);
-//                    sleep(12500);
-////
-//                    intakeServoLeft.setPosition(0.54);
-//                    intakeServoRight.setPosition(0.45);
-//                    intakeCRSLeft.setPower(-1);
-//                    intakeCRSRight.setPower(1);
-//                    lockServo.setPosition(0);
-//                    intakeDrive.setPower(0.2);
-//                    intakeTargetPosition = 880;
-//                    sleep(740);
-//
-//                    intakeTargetPosition = 0;
-//                    intakeDrive.setPower(0.75);
-//                    intakeServoLeft.setPosition(0.32);
-//                    intakeServoRight.setPosition(0.695);
-
-
-//
-                // Execute one step of intake movement
-
-
-                // Check if the action is complete
-
-
-                // Return false to indicate the action is still ongoing
 
                 return !intakeComplete;
             }
@@ -454,34 +332,6 @@ public class rrAuto extends LinearOpMode {
 
                 intakeMovement(720);
 
-//                    intakeTargetPosition = 300;
-//                    intakeDrive.setPower(1);
-//                    sleep(12500);
-////
-//                    intakeServoLeft.setPosition(0.54);
-//                    intakeServoRight.setPosition(0.45);
-//                    intakeCRSLeft.setPower(-1);
-//                    intakeCRSRight.setPower(1);
-//                    lockServo.setPosition(0);
-//                    intakeDrive.setPower(0.2);
-//                    intakeTargetPosition = 880;
-//                    sleep(740);
-//
-//                    intakeTargetPosition = 0;
-//                    intakeDrive.setPower(0.75);
-//                    intakeServoLeft.setPosition(0.32);
-//                    intakeServoRight.setPosition(0.695);
-
-
-//
-                // Execute one step of intake movement
-
-
-                // Check if the action is complete
-
-
-                // Return false to indicate the action is still ongoing
-
                 return !intakeComplete;
             }
         }
@@ -503,35 +353,6 @@ public class rrAuto extends LinearOpMode {
                 }
 
                 intakeMovement(830);
-
-
-//                    intakeTargetPosition = 300;
-//                    intakeDrive.setPower(1);
-//                    sleep(12500);
-////
-//                    intakeServoLeft.setPosition(0.54);
-//                    intakeServoRight.setPosition(0.45);
-//                    intakeCRSLeft.setPower(-1);
-//                    intakeCRSRight.setPower(1);
-//                    lockServo.setPosition(0);
-//                    intakeDrive.setPower(0.2);
-//                    intakeTargetPosition = 880;
-//                    sleep(740);
-//
-//                    intakeTargetPosition = 0;
-//                    intakeDrive.setPower(0.75);
-//                    intakeServoLeft.setPosition(0.32);
-//                    intakeServoRight.setPosition(0.695);
-
-
-//
-                // Execute one step of intake movement
-
-
-                // Check if the action is complete
-
-
-                // Return false to indicate the action is still ongoing
 
                 return !intakeComplete;
             }
