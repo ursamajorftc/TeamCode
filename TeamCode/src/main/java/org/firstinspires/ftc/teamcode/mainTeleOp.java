@@ -48,10 +48,13 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.dashboard.config.Config;
+
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+@Config
 
 @TeleOp(name = "mainTeleOp", group = "Linear OpMode")
 
@@ -99,10 +102,16 @@ public class mainTeleOp extends LinearOpMode {
 	View relativeLayout;
 	final float[] hsvValues = new float[3];
 	public double intakeServoPosition = 0;
-	int highBasket = 1100;
+	int highBasket = 1150;
 	int lowBasket = 530;
 	int downPosition = 0;
-	PIDController pid = new PIDController(0.04, 0, 0.05);
+
+	public static double kp = 0.01;
+	public static double ki = 0.0;
+	public static double kd = 0.0;
+
+
+	PIDController pid = new PIDController(kp, kd, ki);
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -132,9 +141,11 @@ public class mainTeleOp extends LinearOpMode {
 
 		outmoto1.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 		outmoto2.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+		outmoto1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 		outmoto1.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 		outmoto2.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
 
 		VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
 		colorSensor = hardwareMap.get(NormalizedColorSensor.class, "intakeSensor");
@@ -162,6 +173,10 @@ public class mainTeleOp extends LinearOpMode {
 			int state = 0;
 
 			while (opModeIsActive()) {
+
+
+
+
 				drive.setDrivePowers(new PoseVelocity2d(
 						new Vector2d(
 								-gamepad2.left_stick_y * Math.abs(gamepad2.left_stick_y) * 1,
@@ -261,6 +276,8 @@ public class mainTeleOp extends LinearOpMode {
 				packet.put("Deposit Slides", outmoto1.getCurrentPosition());
 				double batteryVoltage = voltageSensor.getVoltage();
 				packet.put("Battery Voltage", batteryVoltage);
+				packet.put("Deposit position", outmoto1.getCurrentPosition());
+				packet.put("Target Position", highBasket );
 				dashboard.sendTelemetryPacket(packet);
 
 				telemetry.addData("Battery Voltage", batteryVoltage);
