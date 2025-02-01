@@ -65,6 +65,7 @@ public class mainTeleOp extends LinearOpMode {
 	private CRServo intakeCRSLeft = null;
 	private CRServo intakeCRSRight = null;
 	private Servo intakeServoLeft = null;
+	private Servo intakeServoRight = null;
 	private Servo lockServo = null;
 	private DcMotor intakeDrive = null;
 	private Servo clawServo = null;
@@ -93,7 +94,7 @@ public class mainTeleOp extends LinearOpMode {
 	private boolean PreviousDpadLeftState = false;
 	private boolean previousAState = false;
 	private boolean previousIntakeState = false;
-	private Servo intakeServoRight = null;
+
 	boolean sampleDistanceTriggered = false;
 	int state = 0; // Persistent state variable
 	long startTime = 0; // Persistent timer variable
@@ -167,7 +168,6 @@ public class mainTeleOp extends LinearOpMode {
 
 		// run until the end of the match (driver presses STOP)
 		while (opModeIsActive()) {
-
 			boolean sampleDistanceTriggered = false;
 			long startTime = 0;
 			int state = 0;
